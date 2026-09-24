@@ -55,20 +55,29 @@ transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .iconbtn.dark{background:var(--nav);color:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
 .iconbtn svg{width:22px;height:22px}
 
-/* ---------- weather mini (next to avatar) ---------- */
-.wx-mini{display:flex;align-items:center;gap:7px;padding:7px 12px 7px 9px;border-radius:999px;
+/* ---------- weather mini (right side) ---------- */
+.wx-mini{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 10px;border-radius:999px;
 background:rgba(255,255,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
 border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 20px -12px rgba(90,110,180,.35);
 cursor:pointer;user-select:none;transition:transform .2s;color:#3A3454;text-align:left;
-font-family:inherit;flex:none;max-width:148px;
+font-family:inherit;flex:none;max-width:172px;position:relative;overflow:hidden;
 animation:rise .6s .08s cubic-bezier(.22,1,.36,1) both}
 .wx-mini:active{transform:scale(.94)}
-.wx-ico{font-size:22px;line-height:1;flex:none;animation:wxfloat 3.5s ease-in-out infinite}
+.wx-mini::after{content:"";position:absolute;inset:-2px;pointer-events:none;
+background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.65) 50%,transparent 58%);
+transform:translateX(-130%);animation:wxshine 4.5s ease-in-out infinite}
+@keyframes wxshine{0%,55%{transform:translateX(-130%)}92%,100%{transform:translateX(130%)}}
+.wx-ico{font-size:24px;line-height:1;flex:none;
+animation:wxfloat 3.5s ease-in-out infinite,wxglow 3.5s ease-in-out infinite}
 @keyframes wxfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-.wx-tx{display:flex;flex-direction:column;line-height:1.2;min-width:0}
-.wx-tx b{font-size:15px;font-weight:800}
-.wx-tx small{font-size:10.5px;font-weight:700;color:var(--muted);white-space:nowrap;
-overflow:hidden;text-overflow:ellipsis;max-width:96px}
+@keyframes wxglow{0%,100%{filter:drop-shadow(0 2px 5px rgba(255,180,90,.35))}
+50%{filter:drop-shadow(0 3px 10px rgba(255,180,90,.6))}}
+.wx-tx{display:flex;flex-direction:column;line-height:1.2;min-width:0;position:relative;z-index:1}
+.wx-tx b{font-size:16px;font-weight:800;display:inline-block}
+.wx-tx b.pop{animation:wxpop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes wxpop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.wx-tx small{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;
+overflow:hidden;text-overflow:ellipsis;max-width:118px}
 
 /* ---------- add button in navbar ---------- */
 .navbar #addBtn.iconbtn.dark{width:62px;height:62px;border-radius:50%;margin:-10px 0;flex:none}
@@ -854,11 +863,11 @@ html[data-theme="dark"]{color-scheme:light !important}
   <section class="screen active" id="scr-plan">
     <header class="topbar">
       <div class="avatar">D</div>
+      <div class="hello"><b>Привет, Denis</b><span id="todayLine">Сегодня</span></div>
       <button class="wx-mini" id="wxStrip" aria-label="Погода, тап — определить местоположение">
         <span class="wx-ico" id="wxIco">🌤️</span>
         <span class="wx-tx"><b id="wxTemp">--°</b><small id="wxCity">…</small></span>
       </button>
-      <div class="hello"><b>Привет, Denis</b><span id="todayLine">Сегодня</span></div>
     </header>
     <div class="hero">
       <div class="hero-txt">
@@ -1794,10 +1803,15 @@ const Wx = (() => {
       const j = await r.json(); return j.city || j.locality || '';
     } catch (e) { return ''; }
   }
+  let lastTemp = null;
   function paint(d) {
     const wd = wmo(d.code);
     icoEl.textContent = wd[0];
     tmpEl.textContent = (d.temp > 0 ? '+' : '') + d.temp + '°';
+    if (lastTemp !== null && lastTemp !== d.temp) {
+      tmpEl.classList.remove('pop'); void tmpEl.offsetWidth; tmpEl.classList.add('pop');
+    }
+    lastTemp = d.temp;
     cityEl.textContent = d.city || '';
     strip.title = wd[1] + ' · макс ' + d.hi + '° / мин ' + d.lo + '°';
   }
