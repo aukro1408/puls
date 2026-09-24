@@ -55,6 +55,22 @@ transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .iconbtn.dark{background:var(--nav);color:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
 .iconbtn svg{width:22px;height:22px}
 
+/* ---------- weather strip ---------- */
+.wx-strip{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:7px;
+padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.55);
+backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 20px -12px rgba(90,110,180,.35);
+font-size:13px;font-weight:800;color:#3A3454;cursor:pointer;user-select:none;
+white-space:nowrap;overflow:hidden;animation:rise .6s .08s cubic-bezier(.22,1,.36,1) both;
+transition:transform .2s}
+.wx-strip:active{transform:scale(.97)}
+.wx-ico{font-size:18px;line-height:1;animation:wxfloat 3.5s ease-in-out infinite}
+@keyframes wxfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.wx-temp{font-size:15px}
+.wx-dot{opacity:.35}
+.wx-city,.wx-desc{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.wx-desc{font-weight:700;color:var(--muted)}
+
 /* ---------- hero ---------- */
 .hero{margin-top:16px;background:var(--hero);border-radius:30px;padding:22px;position:relative;
 overflow:hidden;min-height:178px;display:flex;box-shadow:var(--shadow);
@@ -841,6 +857,14 @@ html[data-theme="dark"]{color-scheme:light !important}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
     </header>
+    <div class="wx-strip" id="wxStrip" role="button" tabindex="0" aria-label="Погода, обновить местоположение">
+      <span class="wx-ico" id="wxIco">🌤️</span>
+      <span class="wx-temp" id="wxTemp">--°</span>
+      <span class="wx-dot">·</span>
+      <span class="wx-city" id="wxCity">…</span>
+      <span class="wx-dot">·</span>
+      <span class="wx-desc" id="wxDesc">загрузка</span>
+    </div>
     <div class="hero">
       <div class="hero-txt">
         <h1>Дневной план</h1>
@@ -1740,9 +1764,72 @@ document.getElementById('sndRow')?.addEventListener('click', e => {
   if (btn) SndEngine.play(btn.dataset.snd);
 });
 
+/* ---------- weather strip (Open-Meteo, free, no key) ---------- */
+const Wx = (() => {
+  const KEY = 'puls.wx.v1', TTL = 30 * 60 * 1000;
+  const strip = document.getElementById('wxStrip');
+  if (!strip) return { init() {} };
+  const icoEl = document.getElementById('wxIco'), tmpEl = document.getElementById('wxTemp'),
+        cityEl = document.getElementById('wxCity'), descEl = document.getElementById('wxDesc');
+  const WMO = [
+    [[0], '☀️', 'Ясно'], [[1], '🌤️', 'Преимущественно ясно'], [[2], '⛅', 'Переменная облачность'],
+    [[3], '☁️', 'Пасмурно'], [[45, 48], '🌫️', 'Туман'],
+    [[51, 53, 55], '🌦️', 'Морось'], [[56, 57], '🌧️', 'Ледяная морось'],
+    [[61, 63, 65], '🌧️', 'Дождь'], [[66, 67], '🌧️', 'Ледяной дождь'],
+    [[71, 73, 75, 77], '🌨️', 'Снег'], [[80, 81, 82], '🌦️', 'Ливневый дождь'], [[85, 86], '🌨️', 'Снегопад'],
+    [[95], '⛈️', 'Гроза'], [[96, 99], '⛈️', 'Гроза с градом'],
+  ];
+  const wmo = c => { for (const [cs, i, d] of WMO) if (cs.includes(c)) return [i, d]; return ['🌤️', '—']; };
+  const load = () => { try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && Date.now() - v.t < TTL) return v; } catch (e) {} return null; };
+  const save = v => { try { localStorage.setItem(KEY, JSON.stringify(Object.assign({}, v, { t: Date.now() }))); } catch (e) {} };
+  async function fetchWx(lat, lon) {
+    const u = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(2) + '&longitude=' + lon.toFixed(2) +
+      '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1';
+    const r = await fetch(u); if (!r.ok) throw new Error('wx');
+    const j = await r.json();
+    return { temp: Math.round(j.current.temperature_2m), code: j.current.weather_code,
+             hi: Math.round(j.daily.temperature_2m_max[0]), lo: Math.round(j.daily.temperature_2m_min[0]) };
+  }
+  async function cityName(lat, lon) {
+    try {
+      const r = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=ru');
+      const j = await r.json(); return j.city || j.locality || '';
+    } catch (e) { return ''; }
+  }
+  function paint(d) {
+    const wd = wmo(d.code);
+    icoEl.textContent = wd[0];
+    tmpEl.textContent = (d.temp > 0 ? '+' : '') + d.temp + '°';
+    cityEl.textContent = d.city || '';
+    descEl.textContent = wd[1] + ' · ' + d.hi + '°/' + d.lo + '°';
+  }
+  async function refresh(lat, lon, city) {
+    try {
+      const w = await fetchWx(lat, lon);
+      const name = city || await cityName(lat, lon);
+      const d = { temp: w.temp, code: w.code, hi: w.hi, lo: w.lo, city: name, lat: lat, lon: lon };
+      paint(d); save(d);
+    } catch (e) { /* keep previous */ }
+  }
+  function locate() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      p => refresh(p.coords.latitude, p.coords.longitude),
+      () => {}, { timeout: 8000, maximumAge: 600000 });
+  }
+  function init() {
+    const c = load();
+    if (c) { paint(c); refresh(c.lat, c.lon, c.city); }
+    else refresh(50.45, 30.52, 'Киев');
+    strip.addEventListener('click', locate);
+  }
+  return { init: init, locate: locate };
+})();
+
 renderPresets();
 paintFocus();
 renderAll();
+Wx.init();
 setInterval(tick, 30000);
 setInterval(checkStarts, 15000);
 checkStarts();
