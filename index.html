@@ -1279,7 +1279,7 @@ function sysNotifOn() {
     Notification.permission === 'granted' && 'showTrigger' in Notification.prototype);
 }
 async function scheduleTaskNotif(it) {
-  if (!sysNotifOn() || it.done || it.fired) return;
+  if (!sysNotifOn() || it.done) return;
   const reg = await swReady(); if (!reg) return;
   const ts = new Date(it.date + 'T' + it.time + ':00').getTime();
   if (!(ts > Date.now())) return;
@@ -2123,7 +2123,7 @@ $('#clearBtn').addEventListener('click', () => {
 
 /* ---------- срабатывания ---------- */
 function checkStarts() {
-  const t = todayStr();
+  if (sysNotifOn()) return; // системные триггеры всё делают сами — не гасим запланированное
   const d = new Date();
   const nowMin = d.getHours()*60 + d.getMinutes();
   let changed = false;
@@ -2277,6 +2277,9 @@ renderBreathPats();
 breathPaintTotals();
 renderAll();
 Wx.init();
+if (sysNotifOn()) { let healed = false;
+  state.items.forEach(it => { if (it.fired) { it.fired = false; healed = true; } });
+  if (healed) save(); }
 rescheduleTaskNotifs();
 setInterval(tick, 30000);
 setInterval(checkStarts, 15000);
