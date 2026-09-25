@@ -48,10 +48,8 @@ body.livebg .app{position:relative;z-index:1}
 .bgshead{display:flex;align-items:center;justify-content:space-between}
 .bgshead b{font-size:13px;font-weight:800}
 .bshuffle{font-size:12.5px;font-weight:800;color:var(--accent);padding:7px 13px;border-radius:12px;background:var(--input)}
-.bshuffle:active{transform:scale(.94)}
 .bgpresets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .bgpreset{border:1.5px solid var(--line);border-radius:16px;padding:10px 6px;background:var(--input);display:grid;gap:7px;justify-items:center;transition:border-color .2s,transform .15s}
-.bgpreset:active{transform:scale(.95)}
 .bgpreset.on{border-color:var(--accent)}
 .bgsw{display:flex;gap:4px}
 .bgsw i{width:15px;height:15px;border-radius:50%;flex:none}
@@ -87,7 +85,6 @@ box-shadow:0 8px 18px -8px rgba(240,107,168,.6)}
 .hello span{font-size:12.5px;color:var(--muted);font-weight:700}
 .iconbtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;flex:none;
 transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.iconbtn:active{transform:scale(.88)}
 .iconbtn.dark{background:var(--nav);color:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
 .iconbtn svg{width:22px;height:22px}
 
@@ -98,7 +95,6 @@ border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 20px -12px rgba(90,110,18
 cursor:pointer;user-select:none;transition:transform .2s;color:#3A3454;text-align:left;
 font-family:inherit;flex:none;max-width:172px;position:relative;overflow:hidden;
 animation:rise .6s .08s cubic-bezier(.22,1,.36,1) both}
-.wx-mini:active{transform:scale(.94)}
 .wx-mini::after{content:"";position:absolute;inset:-2px;pointer-events:none;
 background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.65) 50%,transparent 58%);
 transform:translateX(-130%);animation:wxshine 4.5s ease-in-out infinite}
@@ -145,7 +141,6 @@ scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .day{flex:none;min-width:57px;border:1.5px solid var(--line);border-radius:999px;background:transparent;
 padding:9px 0;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;
 transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s}
-.day:active{transform:scale(.9)}
 .day .dow{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .day .num{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
 .day .hdot{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--faint)}
@@ -167,14 +162,13 @@ overflow:hidden;animation:rise .55s cubic-bezier(.22,1,.36,1) both;box-shadow:0 
 .pill{background:rgba(255,255,255,.6);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
 .px{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:17px;line-height:1;
 color:rgba(29,27,40,.4);transition:background .2s,transform .2s}
-.px:active{transform:scale(.85);background:rgba(0,0,0,.08)}
+.px:active{background:rgba(0,0,0,.08)}
 .pcard h3{margin:12px 0 4px;font-size:16.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;position:relative;z-index:2}
 .pcard .meta{margin:0;font-size:12.5px;font-weight:700;color:rgba(29,27,40,.6);position:relative;z-index:2}
 .pcard-bot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;position:relative;z-index:2}
 .cat{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#fff;box-shadow:0 6px 14px -8px rgba(0,0,0,.4)}
 .donebtn{width:42px;height:42px;border-radius:50%;border:2px solid rgba(29,27,40,.28);display:grid;place-items:center;
 color:transparent;transition:all .3s cubic-bezier(.34,1.56,.64,1);background:rgba(255,255,255,.35)}
-.donebtn:active{transform:scale(.85)}
 .donebtn svg{width:20px;height:20px}
 .pcard.done{opacity:.55}
 .pcard.done h3{text-decoration:line-through;text-decoration-thickness:2px}
@@ -186,7 +180,6 @@ mask-image:radial-gradient(110% 110% at 60% 50%,#000 55%,transparent 80%)}
 .pcard.focuscard h3{max-width:70%}
 .playbtn{width:46px;height:46px;border-radius:50%;background:#191923;color:#fff;display:grid;place-items:center;
 box-shadow:0 10px 20px -8px rgba(0,0,0,.5);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.playbtn:active{transform:scale(.88)}
 .playbtn svg{width:20px;height:20px;margin-left:2px}
 .pcard.minicard{background:linear-gradient(135deg,#F7C3DC,#F0A4C9)}
 
@@ -194,7 +187,6 @@ box-shadow:0 10px 20px -8px rgba(0,0,0,.5);transition:transform .25s cubic-bezie
 .catpick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .catbtn{display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 4px;border-radius:18px;
 background:transparent;transition:background .2s,transform .15s}
-.catbtn:active{transform:scale(.93)}
 .catbtn .cdot{width:54px;height:54px;border-radius:50%;background:var(--dot);display:grid;place-items:center;color:#fff;
 box-shadow:0 8px 16px -8px rgba(60,45,110,.45),inset 0 1px 2px rgba(255,255,255,.55);
 transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
@@ -222,12 +214,10 @@ box-shadow:0 10px 20px -10px rgba(60,45,110,.5);position:relative;z-index:1}
 .pcard.taskcard .meta{margin:0;font-size:12px;font-weight:700;color:var(--muted)}
 .tc-side{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:10px;flex:none;margin-left:auto;align-self:stretch;padding:2px 0;position:relative;z-index:1}
 .pcard.taskcard .px{width:26px;height:26px;font-size:15px;color:rgba(29,27,40,.3);border-radius:50%}
-.pcard.taskcard .px:active{transform:scale(.85)}
 .pcard.taskcard .donebtn{width:38px!important;height:38px!important;min-width:38px!important;flex:none!important;border-radius:50%!important;
 border:2px solid rgba(112,87,232,.45)!important;background:#fff!important;color:transparent!important;box-shadow:0 4px 12px -4px rgba(112,87,232,.4)!important;
 display:grid!important;place-items:center!important;padding:0!important}
 .pcard.taskcard .donebtn svg{width:17px!important;height:17px!important;opacity:0!important}
-.pcard.taskcard .donebtn:active{transform:scale(.88)}
 .pcard.taskcard.done{opacity:.6}
 .pcard.taskcard.done h3{text-decoration:line-through;text-decoration-thickness:2px}
 .pcard.taskcard.done .donebtn{background:#7057E8!important;border-color:#7057E8!important;color:#fff!important}
@@ -248,7 +238,6 @@ justify-content:space-around;padding:9px;box-shadow:0 22px 45px -16px rgba(0,0,0
 .navi{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:rgba(255,255,255,.42);
 transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .navi svg{width:24px;height:24px}
-.navi:active{transform:scale(.88)}
 .navi.active{background:#fff;color:#17171F;box-shadow:0 8px 18px -6px rgba(255,255,255,.35)}
 
 /* ---------- page headers ---------- */
@@ -258,7 +247,6 @@ transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .ftime{font-size:74px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;position:relative}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;font-weight:800;
 padding:15px 30px;font-size:15.5px;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.btn:active{transform:scale(.94)}
 .btn.light{background:#fff;color:#1B1B26}
 .btn.ghost{background:rgba(255,255,255,.1);color:#fff}
 .btn.dark{background:var(--nav);color:#fff;box-shadow:0 14px 26px -12px rgba(0,0,0,.5)}
@@ -289,7 +277,6 @@ padding:15px 30px;font-size:15.5px;transition:transform .25s cubic-bezier(.34,1.
 border:2px solid var(--accent);border-radius:12px;padding:5px 10px;background:#fff;outline:none}
 .pedit{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;
 background:rgba(0,0,0,.06);color:var(--muted);transition:transform .2s,background .2s,color .2s}
-.pedit:active{transform:scale(.88)}
 .pedit svg{width:18px;height:18px}
 .pedit.save{background:var(--accent);color:#fff}
 .setcard{margin-top:12px;background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;animation:rise .6s cubic-bezier(.22,1,.36,1) .06s both}
@@ -328,7 +315,6 @@ box-shadow:0 -20px 60px rgba(40,30,90,.3);transition:transform .42s cubic-bezier
 .pick button{width:56px;height:56px;border-radius:50%;overflow:hidden;border:2.5px solid transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);background:#fff;padding:0}
 .pick button img{width:100%;height:100%;object-fit:cover}
 .pick button.on{border-color:var(--nav);transform:scale(1.08);box-shadow:0 8px 16px -8px rgba(0,0,0,.4)}
-.pick button:active{transform:scale(.92)}
 
 /* ---------- toasts ---------- */
 .toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom));z-index:60;
@@ -447,7 +433,7 @@ html[data-theme="dark"]{color-scheme:light !important}
   box-shadow:0 10px 24px rgba(101,85,225,.30) !important;
   transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s ease;
 }
-#addBtn.iconbtn.dark:active{transform:scale(.91);box-shadow:0 5px 14px rgba(101,85,225,.24) !important}
+#addBtn.iconbtn.dark:active{box-shadow:0 5px 14px rgba(101,85,225,.24) !important}
 .day.sel{
   background:linear-gradient(135deg,#765BEE 0%,#5A8AF5 100%) !important;
   border-color:transparent !important;
@@ -599,7 +585,7 @@ html[data-theme="dark"]{color-scheme:light !important}
   font-weight:800!important;
 }
 #emptyAdd:disabled{opacity:1!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
-#emptyAdd:active{filter:brightness(.96)!important;transform:scale(.97)}
+#emptyAdd:active{filter:brightness(.96)!important}
 #addBtn{background:linear-gradient(135deg,#7657F5,#5369F5)!important;color:#fff!important}
 
 /* Apple-inspired in-app notification banners: legible glass, above the nav */
@@ -775,7 +761,6 @@ backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6p
 .bex{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:20px;padding:14px 16px;color:#6B4F3D;
 background:linear-gradient(180deg,#FFFDF9 0%,#F6EBD8 100%);
 box-shadow:0 10px 22px rgba(150,100,70,.22),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .2s}
-.bex:active{transform:scale(.98)}
 .bex-t{flex:1}
 .bex-t b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.01em}
 .bex-t small{font-size:12px;font-weight:700;color:#A68A6E}
@@ -789,6 +774,9 @@ box-shadow:0 10px 22px rgba(150,100,70,.20),inset 0 1px 0 rgba(255,255,255,.95);
 .bcard .btn.dark{background:linear-gradient(180deg,#FFFDF9 0%,#F6EBD8 100%);color:#6B4F3D;
 box-shadow:0 14px 26px -10px rgba(120,80,50,.5),inset 0 1px 0 rgba(255,255,255,.95)}
 @media (prefers-reduced-motion:reduce){.bcard{animation:none}}
+/* ---------- micro press scale ---------- */
+button,.pcard,.bcard,.bex,.bring,.day,.srow,.bgpreset,.wx-mini,.catbtn,.statbox,.prof,.pick button{transition:transform .15s ease}
+button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,.srow:active,.bgpreset:active,.wx-mini:active,.catbtn:active,.statbox:active,.prof:active,.pick button:active{transform:scale(.96)}
 </style>
 </head>
 <body>
