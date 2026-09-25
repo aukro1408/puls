@@ -748,15 +748,18 @@ html[data-theme="dark"]{color-scheme:light !important}
 background:linear-gradient(180deg,#82BBA9 0%,#A9CBB4 32%,#EAC79E 64%,#F0AC93 100%);
 box-shadow:0 26px 55px -24px rgba(130,95,70,.5);animation:rise .6s cubic-bezier(.22,1,.36,1) both}
 .bhalo{position:absolute;inset:0;pointer-events:none}
-.bhalo i{position:absolute;left:50%;top:132px;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid rgba(255,255,255,.35)}
-.bhalo i:last-child{width:300px;height:300px;border-color:rgba(255,255,255,.18)}
+.bhalo i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid rgba(255,255,255,.45)}
+.bhalo i:first-child{width:224px;height:224px}
+.bhalo i:last-child{width:296px;height:296px;border-color:rgba(255,255,255,.25)}
 .btitle{font-size:34px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 14px rgba(130,80,55,.3);position:relative}
-.borb-wrap{display:grid;place-items:center;margin:16px 0 4px;min-height:190px;position:relative}
-.borb{width:148px;height:148px;border-radius:50%;display:grid;place-items:center;position:relative;
-background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(255,255,255,.28) 55%,rgba(255,255,255,.1));
-border:1.5px solid rgba(255,255,255,.55);
-box-shadow:0 14px 44px rgba(255,255,255,.28),inset 0 0 34px rgba(255,255,255,.22)}
-.borb span{font-weight:800;font-size:17px;color:#fff;text-shadow:0 1px 10px rgba(130,80,55,.4);padding:0 12px}
+.borb-wrap{display:grid;place-items:center;margin:18px 0 4px;min-height:300px;position:relative}
+.borb{width:148px;height:148px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
+background:radial-gradient(circle at 35% 28%,#FFFFFF 0%,#FBF3E4 55%,#F1E0C8 100%);
+box-shadow:0 18px 44px rgba(150,100,70,.35),inset 0 -10px 22px rgba(190,140,100,.20),inset 0 8px 16px rgba(255,255,255,.95)}
+.borb span{font-weight:800;font-size:17px;color:#7C5F4B;padding:0 12px}
+.bhow{margin:12px auto 0;max-width:340px;background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.35);
+border-radius:18px;padding:12px 16px;font-size:12.5px;line-height:1.55;font-weight:600;color:#fff;text-align:left;
+backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6px rgba(130,80,55,.25)}
 .bcount b{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-shadow:0 2px 12px rgba(130,80,55,.3)}
 .bhint{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-top:2px;min-height:18px}
 .bstats{display:flex;gap:10px;justify-content:center;margin:18px 0 4px}
@@ -811,9 +814,11 @@ box-shadow:0 14px 44px rgba(255,255,255,.28),inset 0 0 34px rgba(255,255,255,.22
   <section class="screen" id="scr-focus">
     <div class="pagehead"><h1>Дыхание</h1><p>Успокой нервы и выровняй дыхание</p></div>
     <div class="bcard">
-      <div class="bhalo" aria-hidden="true"><i></i><i></i></div>
       <div class="btitle">Breathe</div>
-      <div class="borb-wrap"><div class="borb" id="breathOrb"><span id="breathPhase">Готов?</span></div></div>
+      <div class="borb-wrap">
+        <div class="bhalo" aria-hidden="true"><i></i><i></i></div>
+        <div class="borb" id="breathOrb"><span id="breathPhase">Готов?</span></div>
+      </div>
       <div class="bcount"><b id="breathNum">&ndash;</b></div>
       <div class="bhint" id="breathHint">нажми &laquo;Начать&raquo; и дыши вместе с кругом</div>
       <div class="bstats">
@@ -822,6 +827,7 @@ box-shadow:0 14px 44px rgba(255,255,255,.28),inset 0 0 34px rgba(255,255,255,.22
         <div class="bstat"><b id="breathSess">0</b><small>сессий</small></div>
       </div>
       <div class="bpats" id="breathPats"></div>
+      <div class="bhow" id="breathHow"></div>
       <button class="btn dark wide" id="breathStart" style="margin-top:16px">Начать</button>
     </div>
   </section>
@@ -1466,9 +1472,21 @@ $('#addForm').addEventListener('submit', (e) => {
 
 /* ---------- дыхание ---------- */
 const BREATH_PATS = [
-  { id: 'calm', name: 'Спокойствие', desc: '4 · 4 · 6', phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 6]] },
-  { id: 'box', name: 'Квадрат', desc: '4 · 4 · 4 · 4', phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 4], ['Пауза', 4]] },
-  { id: 'deep', name: 'Глубокое', desc: '4 · 7 · 8', phases: [['Вдох', 4], ['Задержка', 7], ['Выдох', 8]] },
+  { id: 'calm', name: 'Спокойствие', desc: '4 · 4 · 6',
+    how: 'Сядь прямо, расслабь плечи. Вдыхай носом на 4 счёта, задержи дыхание на 4, затем медленно выдыхай ртом на 6. Удлинённый выдох успокаивает нервную систему — 3–5 циклов, и тревога отступает.',
+    phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 6]] },
+  { id: 'box', name: 'Квадрат', desc: '4 · 4 · 4 · 4',
+    how: 'Дыши «квадратом»: вдох — задержка — выдох — пауза, всё ровно по 4 счёта, как стороны квадрата. Держи плечи опущенными, дыши животом. Отлично собирает мысли перед важной задачей.',
+    phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 4], ['Пауза', 4]] },
+  { id: 'deep', name: 'Глубокое', desc: '4 · 7 · 8',
+    how: 'Техника для быстрого засыпания. Вдыхай носом на 4 счёта, задержи дыхание на 7, выдыхай ртом на 8 с лёгким свистом. Делай лёжа, повтори 3–4 цикла — тело начнёт расслабляться само.',
+    phases: [['Вдох', 4], ['Задержка', 7], ['Выдох', 8]] },
+  { id: 'even', name: 'Ровное', desc: '5 · 5',
+    how: 'Самое простое на каждый день: вдох на 5 счётов, выдох на 5, без задержек. На вдохе живот мягко поднимается, на выдохе опускается. Выравнивает пульс и возвращает в момент.',
+    phases: [['Вдох', 5], ['Выдох', 5]] },
+  { id: 'minute', name: 'Минутка', desc: '4 · 4',
+    how: 'Когда нет времени: всего минута ровного дыхания. Вдох на 4, выдох на 4. Закрой глаза, отпусти челюсть и язык от нёба. Даже 60 секунд заметно снижают напряжение.',
+    phases: [['Вдох', 4], ['Выдох', 4]] },
 ];
 const BREATH_KEY = 'puls.breath.v1';
 let breath = { pat: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0 } };
@@ -1508,6 +1526,8 @@ function renderBreathPats() {
     b.addEventListener('click', () => { if (breath.running) return; breath.pat = i; renderBreathPats(); });
     box.appendChild(b);
   });
+  const how = $('#breathHow');
+  if (how) how.textContent = BREATH_PATS[breath.pat].how;
 }
 const BREATH_FREQ = { 'Вдох': 523.25, 'Задержка': 440, 'Выдох': 392, 'Пауза': 440 };
 function breathPhase(i) {
