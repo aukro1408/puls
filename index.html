@@ -1330,6 +1330,8 @@ function b64ToU8(b64) {
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }
+/* localtunnel.me показывает страницу-заглушку без этого заголовка */
+const BYPASS_HDR = { 'Bypass-Tunnel-Reminder': '1' };
 const Push = {
   url: null, sub: null, ready: false, _t: 0,
   async init() {
@@ -1340,7 +1342,7 @@ const Push = {
       const d = await (await fetch('push-server.json', { cache: 'no-store' })).json();
       const base = (d && d.url ? String(d.url) : '').replace(/\/+$/, '');
       if (!base) return false;
-      const k = await (await fetch(base + '/vapid-pubkey')).json();
+      const k = await (await fetch(base + '/vapid-pubkey', { headers: BYPASS_HDR })).json();
       if (!k || !k.key) return false;
       const reg = await swReady(); if (!reg) return false;
       let sub = await reg.pushManager.getSubscription();
@@ -1363,7 +1365,7 @@ const Push = {
     const body = JSON.stringify({ subscription: this.sub, tasks: this.tasksPayload() });
     for (let a = 0; a < 3; a++) { /* ретраи: туннель иногда переподключается на ~3с */
       try {
-        const r = await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        const r = await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': '1' }, body });
         if (r.ok) return;
       } catch (e) {}
       await new Promise(r => setTimeout(r, 2500));
@@ -1377,7 +1379,7 @@ const Push = {
       const sub = reg && await reg.pushManager.getSubscription();
       if (sub) {
         try {
-          if (this.url) await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          if (this.url) await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': '1' },
             body: JSON.stringify({ subscription: sub.toJSON(), tasks: [] }) });
         } catch (e) {}
         try { await sub.unsubscribe(); } catch (e) {}
@@ -2063,7 +2065,7 @@ $('#rowNotifDiag').addEventListener('click', async () => {
   if (!(state.settings.notify && perm === 'granted' && reg)) { toast('Тест невозможен — смотри результат проверки'); return; }
   if (mode === 'push') {
     try {
-      const r = await fetch(Push.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      const r = await fetch(Push.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': '1' },
         body: JSON.stringify({ subscription: Push.sub,
           tasks: Push.tasksPayload().concat([{ id: 'diag-' + Date.now(), title: 'Пульс · тест', ts: Date.now() + 15000 }]) }) });
       if (r.ok) toast('Тест летит через push-сервер: закрой приложение и жди ~20 сек');
