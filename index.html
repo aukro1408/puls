@@ -1264,7 +1264,7 @@ function playSnd(kind) {
 function notify(title, body) {
   toast(title);
   if (!state.settings.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
-  if ('showTrigger' in Notification.prototype) return; /* запланированное SW-уведомление придёт само */
+  if (notifMode() !== 'inpage') return; /* push/триггер придут сами */
   try { new Notification(title, { body }); } catch (e) {}
 }
 
@@ -1279,7 +1279,7 @@ function sysNotifOn() {
     Notification.permission === 'granted' && 'showTrigger' in Notification.prototype);
 }
 async function scheduleTaskNotif(it) {
-  if (!sysNotifOn() || it.done) return;
+  if (notifMode() !== 'trigger' || it.done) return;
   const reg = await swReady(); if (!reg) return;
   const ts = new Date(it.date + 'T' + it.time + ':00').getTime();
   if (!(ts > Date.now())) return;
@@ -1310,7 +1310,7 @@ async function cancelAllTaskNotifs() {
   } catch (e) {}
 }
 async function rescheduleTaskNotifs() {
-  if (!sysNotifOn()) return;
+  if (notifMode() !== 'trigger') return;
   const reg = await swReady(); if (!reg) return;
   let have = {};
   try {
@@ -1320,6 +1320,77 @@ async function rescheduleTaskNotifs() {
   for (const it of state.items) {
     if (!have[NOTIF_TAG(it.id)]) await scheduleTaskNotif(it);
   }
+}
+
+/* ----- Web Push: напоминания через сервер (работает без экспериментального флага) ----- */
+function b64ToU8(b64) {
+  const pad = '='.repeat((4 - (b64.length % 4)) % 4);
+  const bin = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+const Push = {
+  url: null, sub: null, ready: false, _t: 0,
+  async init() {
+    this.ready = false;
+    try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+      if (!state.settings.notify || !('Notification' in window) || Notification.permission !== 'granted') return false;
+      const d = await (await fetch('push-server.json', { cache: 'no-store' })).json();
+      const base = (d && d.url ? String(d.url) : '').replace(/\/+$/, '');
+      if (!base) return false;
+      const k = await (await fetch(base + '/vapid-pubkey')).json();
+      if (!k || !k.key) return false;
+      const reg = await swReady(); if (!reg) return false;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) sub = await Promise.race([reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToU8(k.key) }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('push-timeout')), 20000))]);
+      this.url = base; this.sub = sub.toJSON(); this.ready = true;
+      this.sync();
+      return true;
+    } catch (e) { this.ready = false; return false; }
+  },
+  tasksPayload() {
+    const now = Date.now();
+    return state.items
+      .filter(it => !it.done && it.date && it.time)
+      .map(it => ({ id: it.id, title: it.title, ts: new Date(it.date + 'T' + it.time + ':00').getTime() }))
+      .filter(t => t.ts > now);
+  },
+  async sync() {
+    if (!this.ready || !this.url || !this.sub) return;
+    const body = JSON.stringify({ subscription: this.sub, tasks: this.tasksPayload() });
+    for (let a = 0; a < 3; a++) { /* ретраи: туннель иногда переподключается на ~3с */
+      try {
+        const r = await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        if (r.ok) return;
+      } catch (e) {}
+      await new Promise(r => setTimeout(r, 2500));
+    }
+  },
+  soon() { clearTimeout(this._t); this._t = setTimeout(() => this.sync(), 2500); },
+  async off() {
+    this.ready = false;
+    try {
+      const reg = await swReady();
+      const sub = reg && await reg.pushManager.getSubscription();
+      if (sub) {
+        try {
+          if (this.url) await fetch(this.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subscription: sub.toJSON(), tasks: [] }) });
+        } catch (e) {}
+        try { await sub.unsubscribe(); } catch (e) {}
+      }
+    } catch (e) {}
+    this.url = null; this.sub = null;
+  }
+};
+/* активный механизм напоминаний: push > системные триггеры > внутри приложения */
+function notifMode() {
+  if (Push.ready) return 'push';
+  if (sysNotifOn()) return 'trigger';
+  return 'inpage';
 }
 
 /* ---------- время ---------- */
@@ -1437,13 +1508,13 @@ function pcard(it, idx, now) {
     e.stopPropagation();
     state.items = state.items.filter(x => x.id !== it.id);
     cancelTaskNotif(it.id);
-    save(); renderAll(); toast('Удалено');
+    save(); Push.soon(); renderAll(); toast('Удалено');
   });
   el.addEventListener('click', () => {
     it.done = !it.done;
     playSnd('pop');
     if (it.done) cancelTaskNotif(it.id); else scheduleTaskNotif(it);
-    save(); renderAll(); maybeConfetti();
+    save(); Push.soon(); renderAll(); maybeConfetti();
   });
   return el;
 }
@@ -1598,7 +1669,7 @@ $('#addForm').addEventListener('submit', (e) => {
   const nit = { id: uid(), date, time, title, icon: pickIcon, done: false, fired: false };
   state.items.push(nit);
   closeSheet(); save(); renderAll();
-  scheduleTaskNotif(nit);
+  scheduleTaskNotif(nit); Push.soon();
   toast('Напоминание создано');
   chime('start');
 });
@@ -1949,6 +2020,7 @@ $('#rowNotify').addEventListener('click', () => {
   if (state.settings.notify) {
     state.settings.notify = false;
     cancelAllTaskNotifs();
+    Push.off();
     renderSettings(); save();
     toast('Уведомления выключены');
     return;
@@ -1961,7 +2033,7 @@ $('#rowNotify').addEventListener('click', () => {
     state.settings.notify = perm === 'granted';
     renderSettings(); save();
     if (perm === 'granted') {
-      rescheduleTaskNotifs();
+      Push.init().then(ok => { if (!ok) rescheduleTaskNotifs(); });
       notify('Уведомления включены', 'Напоминания будут приходить вовремя');
       toast('Уведомления включены · приходят даже при закрытом приложении');
     }
@@ -1981,12 +2053,23 @@ $('#rowNotifDiag').addEventListener('click', async () => {
   const reg = await swReady();
   let planned = '—';
   if (reg) { try { planned = (await reg.getNotifications({ includeTriggered: true })).length; } catch (e) { planned = 'err'; } }
+  const mode = notifMode();
   alert('Разрешение: ' + perm +
+    '\nРежим: ' + mode + ' (push-сервер: ' + (Push.ready ? 'да' : 'нет') + ')' +
     '\nТриггеры (showTrigger): ' + (trig ? 'да' : 'НЕТ') +
     '\nTimestampTrigger: ' + (tt ? 'да' : 'НЕТ') +
     '\nService worker: ' + (reg ? 'да' : 'НЕТ') +
-    '\nЗапланировано сейчас: ' + planned);
-  if (state.settings.notify && perm === 'granted' && trig && reg) {
+    '\nЗапланировано (триггеры): ' + planned);
+  if (!(state.settings.notify && perm === 'granted' && reg)) { toast('Тест невозможен — смотри результат проверки'); return; }
+  if (mode === 'push') {
+    try {
+      const r = await fetch(Push.url + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: Push.sub,
+          tasks: Push.tasksPayload().concat([{ id: 'diag-' + Date.now(), title: 'Пульс · тест', ts: Date.now() + 15000 }]) }) });
+      if (r.ok) toast('Тест летит через push-сервер: закрой приложение и жди ~20 сек');
+      else toast('Сервер не принял тест');
+    } catch (e) { toast('Не удалось отправить тест'); }
+  } else if (mode === 'trigger') {
     try {
       await reg.showNotification('Пульс · тест', {
         body: 'Если видишь это — уведомления работают',
@@ -2101,7 +2184,7 @@ $('#demoBtn').addEventListener('click', () => {
   ];
   base.forEach(([title, time, icon]) => {
     const dit = { id: uid(), date: selDate, title, time, icon, done: false, fired: false };
-    state.items.push(dit); scheduleTaskNotif(dit);
+    state.items.push(dit); scheduleTaskNotif(dit); Push.soon();
   });
   save(); renderAll();
   toast('Пример дня добавлен');
@@ -2123,7 +2206,7 @@ $('#clearBtn').addEventListener('click', () => {
 
 /* ---------- срабатывания ---------- */
 function checkStarts() {
-  if (sysNotifOn()) return; // системные триггеры всё делают сами — не гасим запланированное
+  if (notifMode() !== 'inpage') return; // push/триггеры всё делают сами — не мешаем
   const d = new Date();
   const nowMin = d.getHours()*60 + d.getMinutes();
   let changed = false;
@@ -2245,7 +2328,7 @@ const Wx = (() => {
       if (dayItems(t).some(i => i.title === tip.title)) continue;
       if (tip.time <= nowHHMM) continue;
       const wit = { id: uid(), date: t, time: tip.time, title: tip.title, icon: tip.icon, done: false, fired: false, wxTip: true };
-      state.items.push(wit); scheduleTaskNotif(wit);
+      state.items.push(wit); scheduleTaskNotif(wit); Push.soon();
       added++;
     }
     if (added) { save(); renderAll(); toast('Погода подсказала · +' + added + ' напоминание'); }
@@ -2277,10 +2360,16 @@ renderBreathPats();
 breathPaintTotals();
 renderAll();
 Wx.init();
-if (sysNotifOn()) { let healed = false;
-  state.items.forEach(it => { if (it.fired) { it.fired = false; healed = true; } });
-  if (healed) save(); }
-rescheduleTaskNotifs();
+if (state.settings.notify && ('Notification' in window) && Notification.permission === 'granted') {
+  Push.init().then(ok => {
+    if (notifMode() !== 'inpage') {
+      let healed = false;
+      state.items.forEach(it => { if (it.fired) { it.fired = false; healed = true; } });
+      if (healed) save();
+    }
+    if (!ok) rescheduleTaskNotifs();
+  });
+}
 setInterval(tick, 30000);
 setInterval(checkStarts, 15000);
 checkStarts();

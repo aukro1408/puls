@@ -1,5 +1,5 @@
 /* Пульс — service worker: офлайн-оболочка приложения */
-const CACHE = 'puls-v2';
+const CACHE = 'puls-v3';
 const SHELL = [
   './',
   './index.html',
@@ -21,6 +21,21 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) {}
+  e.waitUntil(
+    self.registration.showNotification(d.title || 'Пульс', {
+      body: d.body || '',
+      icon: 'icon-192.png',
+      badge: 'icon-192.png',
+      tag: d.tag || 'puls-push',
+      vibrate: [200, 100, 200],
+      data: { url: './' }
+    })
+  );
+});
+
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
   const url = (e.notification.data && e.notification.data.url) || './';
@@ -36,6 +51,7 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.endsWith('push-server.json')) return; /* адрес туннеля — всегда свежий */
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const net = fetch(e.request).then((res) => {
