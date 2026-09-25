@@ -1,5 +1,5 @@
 /* Пульс — service worker: офлайн-оболочка приложения */
-const CACHE = 'puls-v1';
+const CACHE = 'puls-v2';
 const SHELL = [
   './',
   './index.html',

@@ -902,6 +902,11 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
         <span class="st"><b>Уведомления</b><small>Приходят, даже когда приложение закрыто</small></span>
         <span class="switch" id="swNotify"></span>
       </button>
+      <button class="srow" id="rowNotifDiag">
+        <span class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+        <span class="st"><b>Диагностика уведомлений</b><small>Проверка + тестовое через 15 сек</small></span>
+        <span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
+      </button>
       <button class="srow" id="rowSound">
         <span class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></span>
         <span class="st"><b>Звук</b><small>Сигналы в приложении</small></span>
@@ -1967,6 +1972,35 @@ $('#rowNotify').addEventListener('click', () => {
     if (p && typeof p.then === 'function') p.then(apply).catch(() => apply(Notification.permission));
     else setTimeout(() => apply(Notification.permission), 600);
   } catch (e) { apply(Notification.permission); }
+});
+$('#rowNotifDiag').addEventListener('click', async () => {
+  const hasAPI = 'Notification' in window;
+  const perm = hasAPI ? Notification.permission : '—';
+  const trig = hasAPI && ('showTrigger' in Notification.prototype);
+  const tt = typeof TimestampTrigger !== 'undefined';
+  const reg = await swReady();
+  let planned = '—';
+  if (reg) { try { planned = (await reg.getNotifications({ includeTriggered: true })).length; } catch (e) { planned = 'err'; } }
+  alert('Разрешение: ' + perm +
+    '\nТриггеры (showTrigger): ' + (trig ? 'да' : 'НЕТ') +
+    '\nTimestampTrigger: ' + (tt ? 'да' : 'НЕТ') +
+    '\nService worker: ' + (reg ? 'да' : 'НЕТ') +
+    '\nЗапланировано сейчас: ' + planned);
+  if (state.settings.notify && perm === 'granted' && trig && reg) {
+    try {
+      await reg.showNotification('Пульс · тест', {
+        body: 'Если видишь это — уведомления работают',
+        icon: 'icon-192.png', badge: 'icon-192.png',
+        tag: 'puls-diag-test',
+        showTrigger: new TimestampTrigger(Date.now() + 15000),
+        vibrate: [200, 100, 200],
+        data: { url: './' }
+      });
+      toast('Тест запланирован: закрой приложение и жди 15 сек');
+    } catch (e) { toast('Не удалось запланировать тест'); }
+  } else {
+    toast('Тест невозможен — смотри результат проверки');
+  }
 });
 $('#rowSound').addEventListener('click', () => {
   state.settings.sound = !state.settings.sound;
