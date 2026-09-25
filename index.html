@@ -744,7 +744,7 @@ html[data-theme="dark"]{color-scheme:light !important}
 
 
 /* ---------- дыхание ---------- */
-.bcard{margin-top:18px;border-radius:32px;padding:30px 24px 26px;text-align:center;color:#fff;position:relative;overflow:hidden;
+.bcard{margin:18px -20px 0;padding:30px 24px 26px;text-align:center;color:#fff;position:relative;overflow:hidden;
 background:linear-gradient(180deg,#82BBA9 0%,#A9CBB4 32%,#EAC79E 64%,#F0AC93 100%);
 box-shadow:0 26px 55px -24px rgba(130,95,70,.5);animation:rise .6s cubic-bezier(.22,1,.36,1) both}
 .bhalo{position:absolute;inset:0;pointer-events:none}
@@ -762,12 +762,14 @@ border-radius:18px;padding:12px 16px;font-size:12.5px;line-height:1.55;font-weig
 backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6px rgba(130,80,55,.25)}
 .bcount b{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-shadow:0 2px 12px rgba(130,80,55,.3)}
 .bhint{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-top:2px;min-height:18px}
-.bstats{display:flex;gap:10px;justify-content:center;margin:18px 0 4px}
-.bstat{flex:1;max-width:110px;border-radius:18px;padding:10px 6px;color:#6B4F3D;
-background:linear-gradient(180deg,#FFFDF9 0%,#F7ECDB 100%);
-box-shadow:0 10px 22px rgba(150,100,70,.22),inset 0 1px 0 rgba(255,255,255,.95)}
-.bstat b{display:block;font-size:19px;font-weight:800}
-.bstat small{font-size:11px;font-weight:700;color:#A68A6E}
+.brings{display:flex;gap:20px;justify-content:center;margin:22px 0 4px;position:relative}
+.bring{position:relative;width:126px;height:126px;flex:none}
+.bring svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.br-bg{fill:none;stroke:rgba(255,255,255,.30);stroke-width:10}
+.br-fg{fill:none;stroke:url(#brg);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.bring-t{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
+.bring-t b{font-size:27px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 10px rgba(130,80,55,.3);line-height:1}
+.bring-t small{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.88);max-width:72px;line-height:1.3}
 .blist{display:flex;flex-direction:column;gap:10px;margin:16px 0 2px;position:relative}
 .bex{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:20px;padding:14px 16px;color:#6B4F3D;
 background:linear-gradient(180deg,#FFFDF9 0%,#F6EBD8 100%);
@@ -833,10 +835,24 @@ box-shadow:0 10px 22px rgba(150,100,70,.20),inset 0 1px 0 rgba(255,255,255,.95);
       </div>
       <div class="bcount"><b id="breathNum">&ndash;</b></div>
       <div class="bhint" id="breathHint">нажми &laquo;Начать&raquo; и дыши вместе с кругом</div>
-      <div class="bstats">
-        <div class="bstat"><b id="breathCycles">0</b><small>циклов</small></div>
-        <div class="bstat"><b id="breathMins">0</b><small>минут</small></div>
-        <div class="bstat"><b id="breathSess">0</b><small>сессий</small></div>
+      <div class="brings">
+        <div class="bring">
+          <svg viewBox="0 0 120 120">
+            <defs><linearGradient id="brg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F6C177"/><stop offset="1" stop-color="#6FC2AC"/>
+            </linearGradient></defs>
+            <circle class="br-bg" cx="60" cy="60" r="52"/>
+            <circle class="br-fg" id="bringMins" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="bring-t"><b id="breathMins">0</b><small>минут сегодня</small></div>
+        </div>
+        <div class="bring">
+          <svg viewBox="0 0 120 120">
+            <circle class="br-bg" cx="60" cy="60" r="52"/>
+            <circle class="br-fg" id="bringStreak" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="bring-t"><b id="breathStreak">0</b><small>дней подряд</small></div>
+        </div>
       </div>
       <div class="blist" id="breathPats"></div>
       <button class="btn dark wide" id="breathStart" style="margin-top:16px">Начать</button>
@@ -1500,7 +1516,7 @@ const BREATH_PATS = [
     phases: [['Вдох', 4], ['Выдох', 4]] },
 ];
 const BREATH_KEY = 'puls.breath.v1';
-let breath = { pat: 0, open: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0 } };
+let breath = { pat: 0, open: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0, days: {} } };
 try { Object.assign(breath.total, JSON.parse(localStorage.getItem(BREATH_KEY)) || {}); } catch (e) {}
 function breathSave() { try { localStorage.setItem(BREATH_KEY, JSON.stringify(breath.total)); } catch (e) {} }
 let _bac = null;
@@ -1518,12 +1534,30 @@ function breathBlip(freq) {
     o.start(t); o.stop(t + 0.75);
   } catch (e) {}
 }
+function dayStr(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+const BR_C = 2 * Math.PI * 52;
+function setRing(id, p) {
+  const el = document.getElementById(id);
+  if (el) el.style.strokeDashoffset = (BR_C * (1 - Math.max(0, Math.min(1, p)))).toFixed(1);
+}
+function breathStreak() {
+  const days = breath.total.days || {};
+  let n = 0;
+  const d = new Date();
+  if (!((days[dayStr(d)] || {}).sess > 0)) d.setDate(d.getDate() - 1);
+  while (((days[dayStr(d)] || {}).sess > 0)) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
 function breathPaintTotals() {
-  const t = breath.total;
-  const mc = $('#breathCycles'), mm = $('#breathMins'), ms = $('#breathSess');
-  if (mc) mc.textContent = t.cycles;
-  if (mm) mm.textContent = t.mins;
-  if (ms) ms.textContent = t.sess;
+  const t = breath.total, today = dayStr(new Date());
+  const dm = ((t.days[today]) || {}).mins || 0;
+  const mm = $('#breathMins');
+  if (mm) mm.textContent = dm;
+  setRing('bringMins', dm / 10);
+  const st = breathStreak();
+  const se = $('#breathStreak');
+  if (se) se.textContent = st;
+  setRing('bringStreak', st / 7);
 }
 function renderBreathPats() {
   const box = $('#breathPats');
@@ -1573,7 +1607,9 @@ function breathTick() {
   const p = BREATH_PATS[breath.pat];
   const left = Math.max(0, breath.phaseEnd - Date.now());
   $('#breathNum').textContent = Math.ceil(left / 1000) || 1;
-  $('#breathMins').textContent = breath.total.mins + Math.floor((Date.now() - breath.t0) / 60000);
+  const tdm = (((breath.total.days[dayStr(new Date())]) || {}).mins || 0) + Math.floor((Date.now() - breath.t0) / 60000);
+  $('#breathMins').textContent = tdm;
+  setRing('bringMins', tdm / 10);
   if (left <= 0) {
     let n = breath.phase + 1;
     if (n >= p.phases.length) {
@@ -1589,8 +1625,12 @@ function breathTick() {
 function breathStop() {
   clearInterval(breath.timer); breath.timer = null;
   breath.running = false;
-  breath.total.mins += Math.floor((Date.now() - breath.t0) / 60000);
-  if (breath.cycles > 0) breath.total.sess++;
+  const smins = Math.floor((Date.now() - breath.t0) / 60000);
+  const sday = dayStr(new Date());
+  breath.total.mins += smins;
+  const dd = breath.total.days[sday] || (breath.total.days[sday] = { mins: 0, sess: 0, cycles: 0 });
+  dd.mins += smins; dd.cycles += breath.cycles;
+  if (breath.cycles > 0) { dd.sess++; breath.total.sess++; }
   breath.cycles = 0;
   breathSave(); breathPaintTotals();
   const orb = $('#breathOrb');
