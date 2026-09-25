@@ -899,7 +899,7 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
     <div class="setcard">
       <button class="srow" id="rowNotify">
         <span class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/></svg></span>
-        <span class="st"><b>Уведомления</b><small>Напоминание в заданное время</small></span>
+        <span class="st"><b>Уведомления</b><small>Приходят, даже когда приложение закрыто</small></span>
         <span class="switch" id="swNotify"></span>
       </button>
       <button class="srow" id="rowSound">
@@ -1258,8 +1258,62 @@ function playSnd(kind) {
 }
 function notify(title, body) {
   toast(title);
-  if (state.settings.notify && 'Notification' in window && Notification.permission === 'granted') {
-    try { new Notification(title, { body }); } catch (e) {}
+  if (!state.settings.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  if ('showTrigger' in Notification.prototype) return; /* запланированное SW-уведомление придёт само */
+  try { new Notification(title, { body }); } catch (e) {}
+}
+
+/* ----- системные уведомления Android: срабатывают, даже когда приложение закрыто ----- */
+const NOTIF_TAG = id => 'puls-' + id;
+function swReady() {
+  if (!('serviceWorker' in navigator)) return Promise.resolve(null);
+  return navigator.serviceWorker.ready.catch(() => null);
+}
+function sysNotifOn() {
+  return !!(state.settings.notify && 'Notification' in window &&
+    Notification.permission === 'granted' && 'showTrigger' in Notification.prototype);
+}
+async function scheduleTaskNotif(it) {
+  if (!sysNotifOn() || it.done || it.fired) return;
+  const reg = await swReady(); if (!reg) return;
+  const ts = new Date(it.date + 'T' + it.time + ':00').getTime();
+  if (!(ts > Date.now())) return;
+  try {
+    await reg.showNotification(it.title, {
+      body: 'Напоминание \u00b7 ' + it.time,
+      icon: 'icon-192.png',
+      badge: 'icon-192.png',
+      tag: NOTIF_TAG(it.id),
+      showTrigger: new TimestampTrigger(ts),
+      vibrate: [200, 100, 200],
+      data: { url: './' }
+    });
+  } catch (e) {}
+}
+async function cancelTaskNotif(id) {
+  const reg = await swReady(); if (!reg) return;
+  try {
+    const list = await reg.getNotifications({ tag: NOTIF_TAG(id), includeTriggered: true });
+    list.forEach(n => n.close());
+  } catch (e) {}
+}
+async function cancelAllTaskNotifs() {
+  const reg = await swReady(); if (!reg) return;
+  try {
+    const list = await reg.getNotifications({ includeTriggered: true });
+    list.forEach(n => { if (n.tag && n.tag.indexOf('puls-') === 0) n.close(); });
+  } catch (e) {}
+}
+async function rescheduleTaskNotifs() {
+  if (!sysNotifOn()) return;
+  const reg = await swReady(); if (!reg) return;
+  let have = {};
+  try {
+    const list = await reg.getNotifications({ includeTriggered: true });
+    list.forEach(n => { have[n.tag] = true; });
+  } catch (e) {}
+  for (const it of state.items) {
+    if (!have[NOTIF_TAG(it.id)]) await scheduleTaskNotif(it);
   }
 }
 
@@ -1377,11 +1431,13 @@ function pcard(it, idx, now) {
   el.querySelector('.px').addEventListener('click', (e) => {
     e.stopPropagation();
     state.items = state.items.filter(x => x.id !== it.id);
+    cancelTaskNotif(it.id);
     save(); renderAll(); toast('Удалено');
   });
   el.addEventListener('click', () => {
     it.done = !it.done;
     playSnd('pop');
+    if (it.done) cancelTaskNotif(it.id); else scheduleTaskNotif(it);
     save(); renderAll(); maybeConfetti();
   });
   return el;
@@ -1534,8 +1590,10 @@ $('#addForm').addEventListener('submit', (e) => {
   const title = $('#fTitle').value.trim();
   const date = $('#fDate').value, time = $('#fTime').value;
   if (!title || !date || !time) { toast('Заполните название, день и время'); return; }
-  state.items.push({ id: uid(), date, time, title, icon: pickIcon, done: false, fired: false });
+  const nit = { id: uid(), date, time, title, icon: pickIcon, done: false, fired: false };
+  state.items.push(nit);
   closeSheet(); save(); renderAll();
+  scheduleTaskNotif(nit);
   toast('Напоминание создано');
   chime('start');
 });
@@ -1885,6 +1943,7 @@ $('#rowNotify').addEventListener('click', () => {
   if (!('Notification' in window)) { toast('Браузер не поддерживает уведомления'); return; }
   if (state.settings.notify) {
     state.settings.notify = false;
+    cancelAllTaskNotifs();
     renderSettings(); save();
     toast('Уведомления выключены');
     return;
@@ -1896,7 +1955,11 @@ $('#rowNotify').addEventListener('click', () => {
   const apply = (perm) => {
     state.settings.notify = perm === 'granted';
     renderSettings(); save();
-    if (perm === 'granted') notify('Уведомления включены', 'Напоминания будут приходить вовремя');
+    if (perm === 'granted') {
+      rescheduleTaskNotifs();
+      notify('Уведомления включены', 'Напоминания будут приходить вовремя');
+      toast('Уведомления включены · приходят даже при закрытом приложении');
+    }
     else toast('Без разрешения уведомления не придут');
   };
   try {
@@ -2002,8 +2065,10 @@ $('#demoBtn').addEventListener('click', () => {
     ['Обед', '13:00', 'meal'],
     ['Созвон с командой', '15:00', 'meet'],
   ];
-  base.forEach(([title, time, icon]) =>
-    state.items.push({ id: uid(), date: selDate, title, time, icon, done: false, fired: false }));
+  base.forEach(([title, time, icon]) => {
+    const dit = { id: uid(), date: selDate, title, time, icon, done: false, fired: false };
+    state.items.push(dit); scheduleTaskNotif(dit);
+  });
   save(); renderAll();
   toast('Пример дня добавлен');
   gotoTab('plan');
@@ -2032,6 +2097,7 @@ function checkStarts() {
     if (it.date === t && !it.done && !it.fired && toMin(it.time) <= nowMin) {
       it.fired = true; changed = true;
       chime('start');
+      cancelTaskNotif(it.id);
       notify(it.title, 'Напоминание · ' + it.time);
     }
   });
@@ -2144,7 +2210,8 @@ const Wx = (() => {
       state.wxTips[tip.key] = t;
       if (dayItems(t).some(i => i.title === tip.title)) continue;
       if (tip.time <= nowHHMM) continue;
-      state.items.push({ id: uid(), date: t, time: tip.time, title: tip.title, icon: tip.icon, done: false, fired: false, wxTip: true });
+      const wit = { id: uid(), date: t, time: tip.time, title: tip.title, icon: tip.icon, done: false, fired: false, wxTip: true };
+      state.items.push(wit); scheduleTaskNotif(wit);
       added++;
     }
     if (added) { save(); renderAll(); toast('Погода подсказала · +' + added + ' напоминание'); }
@@ -2176,6 +2243,7 @@ renderBreathPats();
 breathPaintTotals();
 renderAll();
 Wx.init();
+rescheduleTaskNotifs();
 setInterval(tick, 30000);
 setInterval(checkStarts, 15000);
 checkStarts();
