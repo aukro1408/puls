@@ -41,12 +41,16 @@ img{display:block}
 body.livebg{background:#FAF3E7}
 body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#F6EFDF 0%,#FAF3E7 45%,#F8EEDC 100%)}
 body.livebg .app{position:relative;z-index:1}
-.bgfx i{position:absolute;border-radius:50%;filter:blur(70px);will-change:transform}
-.bgfx .b1{width:72vmax;height:72vmax;left:-22vmax;top:-24vmax;background:#A9BC7E;opacity:.8;animation:bgd1 30s ease-in-out infinite alternate}
-.bgfx .b2{width:64vmax;height:64vmax;left:6vmax;top:20%;background:#F2674F;opacity:.62;animation:bgd2 36s ease-in-out infinite alternate}
-.bgfx .b3{width:60vmax;height:60vmax;left:-16vmax;top:52%;background:#F5A54B;opacity:.68;animation:bgd3 32s ease-in-out infinite alternate}
-.bgfx .b4{width:68vmax;height:68vmax;right:-22vmax;bottom:-26vmax;background:#FDF8EC;opacity:.95;animation:bgd4 40s ease-in-out infinite alternate}
-.bgfx .b5{width:46vmax;height:46vmax;right:-12vmax;top:-10vmax;background:#F1E4C8;opacity:.75;animation:bgd5 28s ease-in-out infinite alternate}
+.bgfx::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 32%)}
+.bgfx i{position:absolute;border-radius:50%;will-change:transform;mix-blend-mode:screen;
+background:radial-gradient(circle at 50% 50%,var(--core) 0%,var(--mid) 42%,transparent 70%);
+filter:blur(18px);opacity:.9}
+.bgfx .b1{--core:#EDF3CF;--mid:#9DB45F;width:76vmax;height:76vmax;left:-24vmax;top:-26vmax;animation:bgd1 30s ease-in-out infinite alternate}
+.bgfx .b2{--core:#FFC4B0;--mid:#F2603F;width:68vmax;height:68vmax;left:4vmax;top:18%;animation:bgd2 36s ease-in-out infinite alternate}
+.bgfx .b3{--core:#FFE0AC;--mid:#F59E3D;width:64vmax;height:64vmax;left:-18vmax;top:50%;animation:bgd3 32s ease-in-out infinite alternate}
+.bgfx .b4{--core:#FFFFFF;--mid:#FBEFD8;width:72vmax;height:72vmax;right:-24vmax;bottom:-28vmax;mix-blend-mode:normal;opacity:.95;animation:bgd4 40s ease-in-out infinite alternate}
+.bgfx .b5{--core:#F9EFD8;--mid:#EDD49B;width:50vmax;height:50vmax;right:-14vmax;top:-12vmax;animation:bgd5 28s ease-in-out infinite alternate}
 @keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(9vmax,7vmax) scale(1.15)}}
 @keyframes bgd2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-8vmax,7vmax) scale(1)}}
 @keyframes bgd3{from{transform:translate(0,0) scale(1)}to{transform:translate(8vmax,-8vmax) scale(1.18)}}
