@@ -255,22 +255,7 @@ transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .pagehead{padding:24px 0 4px}
 .pagehead h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
 .pagehead p{margin:6px 0 0;color:var(--muted);font-weight:700;font-size:13.5px}
-
-/* ---------- focus ---------- */
-.fcard{margin-top:18px;background:#1B1B26;border-radius:32px;padding:30px 24px;text-align:center;color:#fff;
-box-shadow:0 26px 55px -24px rgba(0,0,0,.6);animation:rise .6s cubic-bezier(.22,1,.36,1) both;position:relative;overflow:hidden}
-.fcard::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,rgba(155,140,255,.22),transparent 60%);pointer-events:none}
 .ftime{font-size:74px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;position:relative}
-.flabel{color:rgba(255,255,255,.55);font-weight:700;font-size:13px;margin-top:2px;position:relative}
-.fring{width:150px;height:150px;margin:6px auto 0;position:relative;display:grid;place-items:center}
-.fring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.fring .bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:9}
-.fring .fg{fill:none;stroke:#B9A8F0;stroke-width:9;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset .5s linear}
-.fring b{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
-.fpresets{display:flex;gap:8px;justify-content:center;margin:20px 0 6px;position:relative}
-.fpre{padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.09);color:#fff;font-weight:800;font-size:13.5px;transition:all .25s}
-.fpre.on{background:#fff;color:#1B1B26}
-.fbtns{display:flex;gap:10px;justify-content:center;margin-top:16px;position:relative}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;font-weight:800;
 padding:15px 30px;font-size:15.5px;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .btn:active{transform:scale(.94)}
@@ -534,10 +519,6 @@ html[data-theme="dark"]{color-scheme:light !important}
   transform-origin:50% 60%;
   animation:focus-stone-float 6s ease-in-out infinite !important;
 }
-@keyframes focus-stone-float{
-  0%,100%{transform:translate3d(0,0,0) rotate(-1deg)}
-  50%{transform:translate3d(0,-10px,0) rotate(1.5deg)}
-}
 /* Leave a clear text lane to the right of the levitating stones. */
 .pcard.focuscard h3,
 .pcard.focuscard .meta{
@@ -723,141 +704,6 @@ html[data-theme="dark"]{color-scheme:light !important}
 .pcard.done .donebtn svg{opacity:1!important}
 .pcard.done .donebtn svg path{stroke:#fff!important}
 
-/* Focus timer: bright violet/blue gradient with subtle drifting starfield */
-.fcard{
-  isolation:isolate!important;
-  background:linear-gradient(132deg,#7357F4 0%,#596CF1 48%,#A56BEF 100%)!important;
-  color:#fff!important;
-  box-shadow:0 22px 48px -20px rgba(93,76,218,.48)!important;
-}
-.fcard::before{
-  content:""!important;
-  position:absolute!important;
-  inset:-22%!important;
-  z-index:-1!important;
-  pointer-events:none!important;
-  opacity:.62!important;
-  background:
-    radial-gradient(2px 2px at 8% 18%,rgba(255,255,255,.95) 98%,transparent),
-    radial-gradient(1.5px 1.5px at 19% 72%,rgba(255,255,255,.8) 98%,transparent),
-    radial-gradient(2px 2px at 31% 34%,rgba(255,255,255,.9) 98%,transparent),
-    radial-gradient(1px 1px at 43% 84%,rgba(255,255,255,.85) 98%,transparent),
-    radial-gradient(2px 2px at 57% 17%,rgba(255,255,255,.9) 98%,transparent),
-    radial-gradient(1.5px 1.5px at 68% 58%,rgba(255,255,255,.85) 98%,transparent),
-    radial-gradient(2px 2px at 81% 28%,rgba(255,255,255,.95) 98%,transparent),
-    radial-gradient(1px 1px at 92% 78%,rgba(255,255,255,.8) 98%,transparent),
-    radial-gradient(ellipse at 50% 45%,rgba(255,255,255,.12),transparent 62%);
-  background-size:100% 100%;
-  animation:focusStarDrift 18s ease-in-out infinite alternate!important;
-}
-.fcard::after{
-  content:""!important;
-  position:absolute!important;
-  inset:0!important;
-  z-index:-1!important;
-  pointer-events:none!important;
-  opacity:.28!important;
-  background:
-    radial-gradient(1px 1px at 13% 47%,#fff 98%,transparent),
-    radial-gradient(1.5px 1.5px at 25% 13%,#fff 98%,transparent),
-    radial-gradient(1px 1px at 38% 63%,#fff 98%,transparent),
-    radial-gradient(1px 1px at 52% 29%,#fff 98%,transparent),
-    radial-gradient(1.5px 1.5px at 73% 87%,#fff 98%,transparent),
-    radial-gradient(1px 1px at 88% 51%,#fff 98%,transparent);
-  animation:focusStars 11s linear infinite!important;
-}
-@keyframes focusStarDrift{
-  0%{transform:translate3d(-1.2%,.5%,0) scale(1)}
-  100%{transform:translate3d(1.5%,-1%,0) scale(1.035)}
-}
-@keyframes focusStars{
-  0%{transform:translateY(0);opacity:.2}
-  50%{opacity:.4}
-  100%{transform:translateY(-8px);opacity:.24}
-}
-.fcard .fring .bg{stroke:rgba(255,255,255,.24)!important}
-.fcard .fring .fg{stroke:#fff!important}
-.fcard .flabel{color:rgba(255,255,255,.78)!important}
-.fcard button{
-  box-shadow:0 8px 24px rgba(39,29,108,.22)!important;
-}
-@media(prefers-reduced-motion:reduce){
-  .fcard::before,.fcard::after{animation:none!important}
-}
-
-
-/* === Arctic Live floating glass bubbles — preserve Lumen gradient === */
-.fcard{
-  isolation:isolate!important;
-  overflow:hidden!important;
-  background:linear-gradient(135deg,#7158F4 0%,#5C6CF3 48%,#A66DEB 100%)!important;
-}
-.fcard::before{
-  content:""!important;
-  position:absolute!important;
-  inset:0!important;
-  z-index:0!important;
-  pointer-events:none!important;
-  border-radius:inherit!important;
-  background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.15),transparent 60%);
-}
-.fcard .af-bubbles{
-  position:absolute;inset:0;z-index:0;overflow:hidden;
-  border-radius:inherit;pointer-events:none;contain:paint;
-}
-.fcard .af-bubbles i{
-  position:absolute;left:var(--bubble-x);bottom:-42px;
-  width:var(--bubble-size);height:var(--bubble-size);
-  border-radius:50%;border:1px solid rgba(232,250,255,.56);
-  background:radial-gradient(circle at 28% 22%,
-    rgba(255,255,255,.62) 0 3%,rgba(222,249,255,.24) 16%,
-    rgba(120,207,242,.08) 48%,rgba(255,255,255,.02) 72%);
-  box-shadow:inset 2px 2px 7px rgba(255,255,255,.24),
-    inset -3px -4px 9px rgba(93,183,226,.12),
-    0 0 12px rgba(140,220,255,.10);
-  opacity:0;transform:translate3d(0,0,0) scale(.82);
-  animation:afBubbleRise var(--bubble-time) linear infinite;
-  animation-delay:var(--bubble-delay);will-change:transform,opacity;
-}
-.fcard .af-bubbles i::after{
-  content:"";position:absolute;left:23%;top:17%;width:23%;height:13%;
-  border-radius:50%;background:rgba(255,255,255,.72);
-  filter:blur(.5px);transform:rotate(-38deg);
-}
-.fcard .af-bubbles i:nth-child(1) {--bubble-x:4%;--bubble-size:13px;--bubble-time:17s;--bubble-delay:-11s}
-.fcard .af-bubbles i:nth-child(2) {--bubble-x:10%;--bubble-size:27px;--bubble-time:25s;--bubble-delay:-5s}
-.fcard .af-bubbles i:nth-child(3) {--bubble-x:17%;--bubble-size:9px;--bubble-time:19s;--bubble-delay:-16s}
-.fcard .af-bubbles i:nth-child(4) {--bubble-x:24%;--bubble-size:19px;--bubble-time:23s;--bubble-delay:-8s}
-.fcard .af-bubbles i:nth-child(5) {--bubble-x:31%;--bubble-size:11px;--bubble-time:16s;--bubble-delay:-3s}
-.fcard .af-bubbles i:nth-child(6) {--bubble-x:38%;--bubble-size:31px;--bubble-time:28s;--bubble-delay:-20s}
-.fcard .af-bubbles i:nth-child(7) {--bubble-x:45%;--bubble-size:15px;--bubble-time:21s;--bubble-delay:-12s}
-.fcard .af-bubbles i:nth-child(8) {--bubble-x:53%;--bubble-size:8px;--bubble-time:18s;--bubble-delay:-7s}
-.fcard .af-bubbles i:nth-child(9) {--bubble-x:60%;--bubble-size:23px;--bubble-time:26s;--bubble-delay:-17s}
-.fcard .af-bubbles i:nth-child(10){--bubble-x:67%;--bubble-size:12px;--bubble-time:20s;--bubble-delay:-2s}
-.fcard .af-bubbles i:nth-child(11){--bubble-x:74%;--bubble-size:34px;--bubble-time:30s;--bubble-delay:-23s}
-.fcard .af-bubbles i:nth-child(12){--bubble-x:81%;--bubble-size:10px;--bubble-time:17s;--bubble-delay:-9s}
-.fcard .af-bubbles i:nth-child(13){--bubble-x:87%;--bubble-size:20px;--bubble-time:24s;--bubble-delay:-14s}
-.fcard .af-bubbles i:nth-child(14){--bubble-x:94%;--bubble-size:14px;--bubble-time:19s;--bubble-delay:-6s}
-.fcard .af-bubbles i:nth-child(15){--bubble-x:7%;--bubble-size:7px;--bubble-time:22s;--bubble-delay:-19s}
-.fcard .af-bubbles i:nth-child(16){--bubble-x:27%;--bubble-size:16px;--bubble-time:27s;--bubble-delay:-24s}
-.fcard .af-bubbles i:nth-child(17){--bubble-x:49%;--bubble-size:10px;--bubble-time:18s;--bubble-delay:-13s}
-.fcard .af-bubbles i:nth-child(18){--bubble-x:71%;--bubble-size:18px;--bubble-time:25s;--bubble-delay:-10s}
-.fcard .af-bubbles i:nth-child(19){--bubble-x:90%;--bubble-size:8px;--bubble-time:21s;--bubble-delay:-4s}
-.fcard .af-bubbles i:nth-child(20){--bubble-x:57%;--bubble-size:26px;--bubble-time:29s;--bubble-delay:-18s}
-@keyframes afBubbleRise{
-  0%{opacity:0;transform:translate3d(0,8vh,0) scale(.78)}
-  12%{opacity:.52}
-  38%{transform:translate3d(18px,-38vh,0) scale(1)}
-  66%{opacity:.30;transform:translate3d(-14px,-76vh,0) scale(1.06)}
-  88%{opacity:.20}
-  100%{opacity:0;transform:translate3d(11px,-118vh,0) scale(1.12)}
-}
-.fcard>*{position:relative;z-index:1}
-.fcard>.af-bubbles{position:absolute;z-index:0}
-@media(prefers-reduced-motion:reduce){
-  .fcard .af-bubbles i{animation:none!important;opacity:.18;bottom:12%}
-}
-
 
 /* Mascot selector integration */
 .prof .avatar{width:88px;height:88px;border-radius:22px;background:#F2EEFB;box-shadow:none;display:grid;place-items:center;position:relative;overflow:visible;flex:none}
@@ -888,60 +734,41 @@ html[data-theme="dark"]{color-scheme:light !important}
 .mopt small{font-size:11.5px;font-weight:700}
 .mopt.on{border-color:#6C5CE7;background:#fff;box-shadow:0 20px 45px -22px rgba(90,70,160,.35)}
 @media (prefers-reduced-motion:reduce){.prof .avatar svg,.prof .avatar .eyes,.prof .avatar .ear,.mopt .avatar svg,.mopt .avatar .eyes,.mopt .avatar .ear,.topbar .avatar svg,.topbar .avatar .eyes,.topbar .avatar .ear{animation:none!important}}
-
-.sndcard{position:relative;margin-top:14px;background:linear-gradient(180deg,#050817 0%,#10103c 48%,#170b31 100%);border:1px solid rgba(91,116,255,.22);border-radius:28px;padding:18px;color:#fff;box-shadow:0 26px 55px -24px rgba(0,0,0,.6);overflow:hidden}
-.sndcard::before{content:"";position:absolute;inset:-24%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 58% 38% at 50% 8%,rgba(0,102,255,.68),transparent 76%),radial-gradient(ellipse 60% 55% at 4% 92%,rgba(255,160,0,.78),transparent 72%),radial-gradient(ellipse 62% 55% at 96% 92%,rgba(226,0,118,.74),transparent 74%);transform:scale(1);opacity:.82;animation:snd-aurora-breathe 8s ease-in-out infinite}
-.sndcard>*{position:relative;z-index:1}
-@keyframes snd-aurora-breathe{0%,100%{transform:scale(.94);opacity:.68}50%{transform:scale(1.08);opacity:1}}
-@media(prefers-reduced-motion:reduce){.sndcard::before{animation:none}}
-.sscene{position:relative;height:132px;border-radius:20px;overflow:hidden;background:#080b1c}
-
-.slayer{position:absolute;inset:0;opacity:0;transition:opacity .9s;pointer-events:none}
-.sndcard[data-scene="idle"] .s-idle,.sndcard[data-scene="rain"] .s-rain,.sndcard[data-scene="ocean"] .s-ocean,.sndcard[data-scene="forest"] .s-forest,.sndcard[data-scene="white"] .s-white{opacity:1}
-.blob{position:absolute;border-radius:50%;filter:blur(22px);animation:sblob 9s ease-in-out infinite}
 .b1{width:130px;height:130px;left:-24px;top:-34px;background:rgba(185,168,240,.38)}
 .b2{width:110px;height:110px;right:-14px;bottom:-34px;background:rgba(118,87,245,.32);animation-delay:-4.5s}
-.s-rain i{position:absolute;top:-22px;width:2px;height:15px;border-radius:2px;background:linear-gradient(rgba(255,255,255,0),rgba(174,194,224,.85));animation:sdrop 1.1s linear infinite}
-.wv{position:absolute;bottom:-6px;left:0;width:200%;height:58px;animation:swave 7s linear infinite}
 .w2{animation-duration:11s;animation-direction:reverse}
-.s-forest .leaf{position:absolute;top:-18px;width:10px;height:14px;background:#8FD694;border-radius:65% 5% 65% 5%;opacity:.75;animation:sleaf 6s ease-in infinite}
-.cloud{position:absolute;height:42px;border-radius:50%;background:rgba(255,255,255,.13);filter:blur(14px);animation:sdrift 9s ease-in-out infinite alternate}
 .c1{width:130px;left:6%;top:22px}.c2{width:100px;left:44%;top:58px;animation-delay:-3s}.c3{width:150px;left:62%;top:16px;animation-delay:-6s}
-.seq{position:absolute;right:14px;bottom:12px;display:none;gap:3px;align-items:flex-end;height:22px}
-.sndcard:not([data-scene="idle"]) .seq{display:flex}
-.seq i{width:4px;height:100%;border-radius:2px;background:#fff;opacity:.85;transform-origin:bottom;animation:seqb .9s ease-in-out infinite}
-.seq i:nth-child(2){animation-delay:-.3s}.seq i:nth-child(3){animation-delay:-.6s}.seq i:nth-child(4){animation-delay:-.15s}
-@keyframes sdrop{to{transform:translateY(170px)}}
-@keyframes swave{to{transform:translateX(-50%)}}
-@keyframes sleaf{to{transform:translateY(180px) rotate(240deg)}}
-@keyframes sdrift{from{transform:translateX(-26px)}to{transform:translateX(26px)}}
-@keyframes sblob{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-12px) scale(1.15)}}
 @keyframes seqb{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
-.shead{text-align:center;margin:14px 0}
-.shead b{display:block;font-size:16px}
-.shead small{color:rgba(255,255,255,.55);font-size:12.5px}
-#sndRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.snd{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);border:1.5px solid transparent;color:#fff;font:inherit;cursor:pointer;text-align:left;transition:border-color .3s,background .3s,box-shadow .3s}
-
-/* Prevent the parent sound grid from flashing its generic pressed background on Android/WebView */
-#sndRow:active{background:transparent!important;-webkit-tap-highlight-color:transparent}
-
-/* Android/WebView: suppress the native white focus/pressed flash on sound tiles */
-.snd,.snd:focus,.snd:active{-webkit-appearance:none;appearance:none;outline:none!important;-webkit-tap-highlight-color:transparent;background-clip:padding-box}
-.snd:focus:not(:focus-visible){box-shadow:none}
-.snd:focus-visible{outline:2px solid rgba(185,168,240,.8)!important;outline-offset:2px}
 .sic{width:46px;height:46px;flex:none;border-radius:15px;display:grid;place-items:center;font-size:23px;background:rgba(255,255,255,.1);line-height:1}
-.stx b{display:block;font-size:14px}
-.stx small{color:rgba(255,255,255,.55);font-size:11.5px}
-.snd.on{border-color:#B9A8F0;background:rgba(185,168,240,.13);box-shadow:0 12px 30px -12px rgba(185,168,240,.5)}
-.snd[data-snd="rain"].on{border-color:#8FB8E8;background:rgba(143,184,232,.12);box-shadow:0 12px 30px -12px rgba(143,184,232,.55)}
-.snd[data-snd="ocean"].on{border-color:#5EC8D8;background:rgba(94,200,216,.12);box-shadow:0 12px 30px -12px rgba(94,200,216,.55)}
-.snd[data-snd="forest"].on{border-color:#8FD694;background:rgba(143,214,148,.12);box-shadow:0 12px 30px -12px rgba(143,214,148,.5)}
-.snd.on .sic{animation:sndpulse 1.6s ease-in-out infinite}
 @keyframes sndpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-@media (prefers-reduced-motion:reduce){.sndcard .slayer,.snd.on .sic,.seq i,.blob,.cloud,.wv,.s-rain i,.s-forest .leaf{animation:none!important}}
 
 
+/* ---------- дыхание ---------- */
+.bcard{margin-top:18px;border-radius:32px;padding:30px 24px 26px;text-align:center;color:#fff;position:relative;overflow:hidden;
+background:linear-gradient(180deg,#82BBA9 0%,#A9CBB4 32%,#EAC79E 64%,#F0AC93 100%);
+box-shadow:0 26px 55px -24px rgba(130,95,70,.5);animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.bhalo{position:absolute;inset:0;pointer-events:none}
+.bhalo i{position:absolute;left:50%;top:132px;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid rgba(255,255,255,.35)}
+.bhalo i:last-child{width:300px;height:300px;border-color:rgba(255,255,255,.18)}
+.btitle{font-size:34px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 14px rgba(130,80,55,.3);position:relative}
+.borb-wrap{display:grid;place-items:center;margin:16px 0 4px;min-height:190px;position:relative}
+.borb{width:148px;height:148px;border-radius:50%;display:grid;place-items:center;position:relative;
+background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(255,255,255,.28) 55%,rgba(255,255,255,.1));
+border:1.5px solid rgba(255,255,255,.55);
+box-shadow:0 14px 44px rgba(255,255,255,.28),inset 0 0 34px rgba(255,255,255,.22)}
+.borb span{font-weight:800;font-size:17px;color:#fff;text-shadow:0 1px 10px rgba(130,80,55,.4);padding:0 12px}
+.bcount b{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-shadow:0 2px 12px rgba(130,80,55,.3)}
+.bhint{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-top:2px;min-height:18px}
+.bstats{display:flex;gap:10px;justify-content:center;margin:18px 0 4px}
+.bstat{flex:1;max-width:110px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:18px;padding:10px 6px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.bstat b{display:block;font-size:19px;font-weight:800}
+.bstat small{font-size:11px;font-weight:700;color:rgba(255,255,255,.85)}
+.bpats{display:flex;gap:8px;justify-content:center;margin:14px 0 2px;flex-wrap:wrap}
+.bpat{padding:9px 15px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:800;font-size:13px;transition:all .25s}
+.bpat small{display:block;font-size:10.5px;font-weight:700;opacity:.75}
+.bpat.on{background:#fff;color:#4E7A6D;border-color:#fff}
+.bpat.on small{opacity:.6}
+@media (prefers-reduced-motion:reduce){.bcard{animation:none}}
 </style>
 </head>
 <body>
@@ -982,41 +809,20 @@ html[data-theme="dark"]{color-scheme:light !important}
 
   <!-- FOCUS -->
   <section class="screen" id="scr-focus">
-    <div class="pagehead"><h1>Фокус</h1><p>Глубокая работа без отвлечений</p></div>
-    <div class="fcard">
-      <div class="af-bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="fring">
-        <svg viewBox="0 0 150 150"><circle class="bg" cx="75" cy="75" r="70"/><circle class="fg" id="focusFg" cx="75" cy="75" r="70"/></svg>
-        <b id="focusTime">25:00</b>
+    <div class="pagehead"><h1>Дыхание</h1><p>Успокой нервы и выровняй дыхание</p></div>
+    <div class="bcard">
+      <div class="bhalo" aria-hidden="true"><i></i><i></i></div>
+      <div class="btitle">Breathe</div>
+      <div class="borb-wrap"><div class="borb" id="breathOrb"><span id="breathPhase">Готов?</span></div></div>
+      <div class="bcount"><b id="breathNum">&ndash;</b></div>
+      <div class="bhint" id="breathHint">нажми &laquo;Начать&raquo; и дыши вместе с кругом</div>
+      <div class="bstats">
+        <div class="bstat"><b id="breathCycles">0</b><small>циклов</small></div>
+        <div class="bstat"><b id="breathMins">0</b><small>минут</small></div>
+        <div class="bstat"><b id="breathSess">0</b><small>сессий</small></div>
       </div>
-      <div class="flabel" id="focusLabel">готовы начать?</div>
-      <div class="fpresets" id="fpresets"></div>
-      <div class="fbtns">
-        <button class="btn light" id="focusStart">Начать</button>
-        <button class="btn ghost" id="focusReset" aria-label="Сбросить">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="sndcard" id="sndCard" data-scene="idle">
-      <div class="sscene" aria-hidden="true">
-        <div class="slayer s-idle"><i class="blob b1"></i><i class="blob b2"></i></div>
-        <div class="slayer s-rain"></div>
-        <div class="slayer s-ocean">
-          <svg class="wv w1" viewBox="0 0 400 60" preserveAspectRatio="none"><path d="M0 30 Q50 10 100 30 T200 30 T300 30 T400 30 V60 H0 Z" fill="rgba(255,255,255,.14)"/></svg>
-          <svg class="wv w2" viewBox="0 0 400 60" preserveAspectRatio="none"><path d="M0 36 Q50 16 100 36 T200 36 T300 36 T400 36 V60 H0 Z" fill="rgba(255,255,255,.09)"/></svg>
-        </div>
-        <div class="slayer s-forest"></div>
-        <div class="slayer s-white"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i></div>
-        <div class="seq"><i></i><i></i><i></i><i></i></div>
-      </div>
-      <div class="shead"><b>Атмосфера</b><small id="sndNow">выбери звук для фона</small></div>
-      <div class="srow" id="sndRow">
-        <button class="snd" data-snd="rain" aria-pressed="false"><span class="sic">&#127783;&#65039;</span><span class="stx"><b>Дождь</b><small>стук капель по стеклу</small></span></button>
-        <button class="snd" data-snd="ocean" aria-pressed="false"><span class="sic">&#127754;</span><span class="stx"><b>Океан</b><small>медленные волны</small></span></button>
-        <button class="snd" data-snd="forest" aria-pressed="false"><span class="sic">&#127795;</span><span class="stx"><b>Лес</b><small>листва и птицы</small></span></button>
-        <button class="snd" data-snd="white" aria-pressed="false"><span class="sic">&#128168;</span><span class="stx"><b>Белый шум</b><small>ровный фон для фокуса</small></span></button>
-      </div>
+      <div class="bpats" id="breathPats"></div>
+      <button class="btn dark wide" id="breathStart" style="margin-top:16px">Начать</button>
     </div>
   </section>
 
@@ -1658,64 +1464,111 @@ $('#addForm').addEventListener('submit', (e) => {
   chime('start');
 });
 
-/* ---------- фокус ---------- */
-let fMin = 25, fLeft = 25*60, fTimer = null, fEnd = 0;
-const FC = 440;
-function paintFocus() {
-  const m = Math.floor(fLeft / 60), s = Math.floor(fLeft % 60);
-  $('#focusTime').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  $('#focusFg').style.strokeDashoffset = FC * (1 - fLeft / (fMin * 60));
-  document.querySelectorAll('.fpre').forEach(b => b.classList.toggle('on', +b.dataset.m === fMin));
+/* ---------- дыхание ---------- */
+const BREATH_PATS = [
+  { id: 'calm', name: 'Спокойствие', desc: '4 · 4 · 6', phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 6]] },
+  { id: 'box', name: 'Квадрат', desc: '4 · 4 · 4 · 4', phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 4], ['Пауза', 4]] },
+  { id: 'deep', name: 'Глубокое', desc: '4 · 7 · 8', phases: [['Вдох', 4], ['Задержка', 7], ['Выдох', 8]] },
+];
+const BREATH_KEY = 'puls.breath.v1';
+let breath = { pat: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0 } };
+try { Object.assign(breath.total, JSON.parse(localStorage.getItem(BREATH_KEY)) || {}); } catch (e) {}
+function breathSave() { try { localStorage.setItem(BREATH_KEY, JSON.stringify(breath.total)); } catch (e) {} }
+let _bac = null;
+function breathBlip(freq) {
+  if (!state.settings.sound) return;
+  try {
+    _bac = _bac || new (window.AudioContext || window.webkitAudioContext)();
+    if (_bac.state === 'suspended') _bac.resume();
+    const t = _bac.currentTime, o = _bac.createOscillator(), g = _bac.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.16, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+    o.connect(g); g.connect(_bac.destination);
+    o.start(t); o.stop(t + 0.75);
+  } catch (e) {}
 }
-function renderPresets() {
-  const box = $('#fpresets');
+function breathPaintTotals() {
+  const t = breath.total;
+  const mc = $('#breathCycles'), mm = $('#breathMins'), ms = $('#breathSess');
+  if (mc) mc.textContent = t.cycles;
+  if (mm) mm.textContent = t.mins;
+  if (ms) ms.textContent = t.sess;
+}
+function renderBreathPats() {
+  const box = $('#breathPats');
+  if (!box) return;
   box.innerHTML = '';
-  [15,25,45,60].forEach(m => {
+  BREATH_PATS.forEach((p, i) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'fpre' + (m === fMin ? ' on' : '');
-    b.dataset.m = m; b.textContent = m + ' мин';
-    b.addEventListener('click', () => {
-      if (fTimer) return;
-      fMin = m; fLeft = m * 60; paintFocus();
-    });
+    b.type = 'button';
+    b.className = 'bpat' + (i === breath.pat ? ' on' : '');
+    b.innerHTML = p.name + '<small>' + p.desc + '</small>';
+    b.addEventListener('click', () => { if (breath.running) return; breath.pat = i; renderBreathPats(); });
     box.appendChild(b);
   });
 }
-$('#focusStart').addEventListener('click', () => {
-  if (fTimer) {
-    clearInterval(fTimer); fTimer = null;
-    fLeft = Math.max(0, (fEnd - Date.now()) / 1000);
-    $('#focusStart').textContent = 'Продолжить';
-    $('#focusLabel').textContent = 'на паузе';
-    paintFocus(); return;
+const BREATH_FREQ = { 'Вдох': 523.25, 'Задержка': 440, 'Выдох': 392, 'Пауза': 440 };
+function breathPhase(i) {
+  const p = BREATH_PATS[breath.pat], ph = p.phases[i];
+  breath.phase = i;
+  const orb = $('#breathOrb');
+  $('#breathPhase').textContent = ph[0];
+  $('#breathHint').textContent = ph[0] === 'Вдох' ? 'медленно вдыхай носом'
+    : ph[0] === 'Выдох' ? 'плавно выдыхай ртом' : 'держи воздух, расслабь плечи';
+  if (orb) {
+    orb.style.transition = 'transform ' + ph[1] + 's ease-in-out';
+    if (ph[0] === 'Вдох') orb.style.transform = 'scale(1.42)';
+    else if (ph[0] === 'Выдох') orb.style.transform = 'scale(1)';
+    else if (!orb.style.transform) orb.style.transform = 'scale(1)';
   }
-  if (fLeft <= 0) fLeft = fMin * 60;
-  fEnd = Date.now() + fLeft * 1000;
-  $('#focusStart').textContent = 'Пауза';
-  $('#focusLabel').textContent = 'фокус идёт';
-  chime('start');
-  fTimer = setInterval(() => {
-    fLeft = Math.max(0, (fEnd - Date.now()) / 1000);
-    if (fLeft <= 0) {
-      clearInterval(fTimer); fTimer = null;
-      $('#focusStart').textContent = 'Ещё раз';
-      $('#focusLabel').textContent = 'готовы начать?';
-      paintFocusDone();
-    } else paintFocus();
-  }, 250);
-});
-function paintFocusDone() {
-  fLeft = 0; paintFocus();
-  chime('done');
-  notify('Фокус завершён', fMin + ' минут продуктивности');
+  breath.phaseEnd = Date.now() + ph[1] * 1000;
+  breathBlip(BREATH_FREQ[ph[0]] || 440);
+  if (navigator.vibrate) { try { navigator.vibrate(25); } catch (e) {} }
 }
-$('#focusReset').addEventListener('click', () => {
-  clearInterval(fTimer); fTimer = null;
-  fLeft = fMin * 60;
-  $('#focusStart').textContent = 'Начать';
-  $('#focusLabel').textContent = 'готовы начать?';
-  paintFocus();
+function breathTick() {
+  const p = BREATH_PATS[breath.pat];
+  const left = Math.max(0, breath.phaseEnd - Date.now());
+  $('#breathNum').textContent = Math.ceil(left / 1000) || 1;
+  $('#breathMins').textContent = breath.total.mins + Math.floor((Date.now() - breath.t0) / 60000);
+  if (left <= 0) {
+    let n = breath.phase + 1;
+    if (n >= p.phases.length) {
+      n = 0;
+      breath.cycles++;
+      breath.total.cycles++;
+      breathSave();
+      breathPaintTotals();
+    }
+    breathPhase(n);
+  }
+}
+function breathStop() {
+  clearInterval(breath.timer); breath.timer = null;
+  breath.running = false;
+  breath.total.mins += Math.floor((Date.now() - breath.t0) / 60000);
+  if (breath.cycles > 0) breath.total.sess++;
+  breath.cycles = 0;
+  breathSave(); breathPaintTotals();
+  const orb = $('#breathOrb');
+  if (orb) { orb.style.transition = 'transform .8s ease-in-out'; orb.style.transform = 'scale(1)'; }
+  $('#breathPhase').textContent = 'Готов?';
+  $('#breathNum').textContent = '–';
+  $('#breathHint').textContent = 'нажми «Начать» и дыши вместе с кругом';
+  $('#breathStart').textContent = 'Начать';
+}
+$('#breathStart').addEventListener('click', () => {
+  if (breath.running) { breathStop(); toast('Сессия завершена · дыши спокойно'); return; }
+  breath.running = true; breath.cycles = 0; breath.t0 = Date.now();
+  $('#breathStart').textContent = 'Завершить';
+  clearInterval(breath.timer);
+  breathPhase(0);
+  breath.timer = setInterval(breathTick, 120);
+  breathTick();
 });
+renderBreathPats();
+breathPaintTotals();
 
 /* ---------- статистика ---------- */
 function renderStats() {
@@ -2087,130 +1940,6 @@ renderMascotPicker();
 updateMascotAvatars();
 const liveMascot = document.querySelector('.topbar .avatar');
 if (liveMascot) liveMascot.addEventListener('click', reactToMascot);
-/* ===== Звуки природы: генерация через Web Audio, без файлов ===== */
-const SndEngine = (() => {
-  let ctx = null, graph = null, current = null, timers = [];
-  const ac = () => {
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === 'suspended') ctx.resume();
-    return ctx;
-  };
-  const whiteBuf = c => {
-    const b = c.createBuffer(1, c.sampleRate * 3, c.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    return b;
-  };
-  const brownBuf = c => {
-    const b = c.createBuffer(1, c.sampleRate * 3, c.sampleRate), d = b.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
-    return b;
-  };
-  const mkSrc = (c, buf) => { const s = c.createBufferSource(); s.buffer = buf; s.loop = true; return s; };
-  const mkFilter = (c, type, freq, q) => { const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; if (q) f.Q.value = q; return f; };
-  const mkGain = (c, v) => { const g = c.createGain(); g.gain.value = v; return g; };
-  const builders = {
-    rain(c, out) {
-      const s = mkSrc(c, whiteBuf(c));
-      const lp = mkFilter(c, 'lowpass', 1600), hp = mkFilter(c, 'highpass', 350), g = mkGain(c, 0.22);
-      s.connect(lp); lp.connect(hp); hp.connect(g); g.connect(out); s.start();
-      return [s];
-    },
-    ocean(c, out) {
-      const s = mkSrc(c, brownBuf(c));
-      const lp = mkFilter(c, 'lowpass', 420), g = mkGain(c, 0.5);
-      const lfo = c.createOscillator(); lfo.frequency.value = 0.09;
-      const depth = mkGain(c, 0.22); lfo.connect(depth); depth.connect(g.gain);
-      const lfo2 = c.createOscillator(); lfo2.frequency.value = 0.07;
-      const d2 = mkGain(c, 140); lfo2.connect(d2); d2.connect(lp.frequency);
-      s.connect(lp); lp.connect(g); g.connect(out);
-      s.start(); lfo.start(); lfo2.start();
-      return [s, lfo, lfo2];
-    },
-    forest(c, out) {
-      const s = mkSrc(c, whiteBuf(c));
-      const bp = mkFilter(c, 'bandpass', 2800, 0.6), g = mkGain(c, 0.05);
-      s.connect(bp); bp.connect(g); g.connect(out); s.start();
-      const chirp = () => {
-        if (current !== 'forest') return;
-        const t = c.currentTime, o = c.createOscillator(), og = mkGain(c, 0);
-        const f0 = 2200 + Math.random() * 1400;
-        o.type = 'sine';
-        o.frequency.setValueAtTime(f0, t);
-        o.frequency.exponentialRampToValueAtTime(f0 * (1.2 + Math.random() * 0.3), t + 0.12);
-        og.gain.setValueAtTime(0, t);
-        og.gain.linearRampToValueAtTime(0.08, t + 0.04);
-        og.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-        o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.35);
-        timers.push(setTimeout(chirp, 1800 + Math.random() * 4500));
-      };
-      timers.push(setTimeout(chirp, 1200));
-      return [s];
-    },
-    white(c, out) {
-      const s = mkSrc(c, whiteBuf(c));
-      const lp = mkFilter(c, 'lowpass', 7000), g = mkGain(c, 0.1);
-      s.connect(lp); lp.connect(g); g.connect(out); s.start();
-      return [s];
-    }
-  };
-  function stop() {
-    timers.forEach(clearTimeout); timers = [];
-    if (graph && ctx) {
-      const g = graph; graph = null;
-      try { g.master.gain.cancelScheduledValues(ctx.currentTime); g.master.gain.setValueAtTime(g.master.gain.value, ctx.currentTime); g.master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.4); } catch (e) {}
-      setTimeout(() => { g.nodes.forEach(n => { try { n.stop && n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} }); try { g.master.disconnect(); } catch (e) {} }, 500);
-    } else { graph = null; }
-    current = null;
-    SndUI.scene('idle');
-    document.querySelectorAll('.snd').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); });
-  }
-  function play(id) {
-    if (current === id) { stop(); return; }
-    stop();
-    const c = ac();
-    const master = mkGain(c, 0.0001);
-    master.connect(c.destination);
-    master.gain.linearRampToValueAtTime(1, c.currentTime + 0.8);
-    const nodes = builders[id](c, master);
-    graph = { master, nodes };
-    current = id;
-    SndUI.scene(id);
-    document.querySelectorAll('.snd').forEach(b => { const on = b.dataset.snd === id; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-  }
-  return { play, stop };
-})();
-const SndUI = (() => {
-  const NAMES = { rain: 'Дождь', ocean: 'Океан', forest: 'Лес', white: 'Белый шум' };
-  const card = document.getElementById('sndCard'), now = document.getElementById('sndNow');
-  // декорации сцены: капли дождя и листья
-  const rain = card?.querySelector('.s-rain'), forest = card?.querySelector('.s-forest');
-  if (rain) for (let k = 0; k < 14; k++) {
-    const d = document.createElement('i');
-    d.style.left = (3 + Math.random() * 94) + '%';
-    d.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
-    d.style.animationDuration = (0.85 + Math.random() * 0.6).toFixed(2) + 's';
-    rain.appendChild(d);
-  }
-  if (forest) for (let k = 0; k < 7; k++) {
-    const l = document.createElement('i'); l.className = 'leaf';
-    l.style.left = (Math.random() * 94) + '%';
-    l.style.animationDelay = (Math.random() * 6).toFixed(2) + 's';
-    l.style.animationDuration = (4.5 + Math.random() * 3.5).toFixed(2) + 's';
-    forest.appendChild(l);
-  }
-  return {
-    scene(id) {
-      if (card) card.dataset.scene = id;
-      if (now) now.textContent = id === 'idle' ? 'выбери звук для фона' : 'сейчас играет \u00b7 ' + NAMES[id];
-    }
-  };
-})();
-document.getElementById('sndRow')?.addEventListener('click', e => {
-  const btn = e.target.closest('.snd');
-  if (btn) SndEngine.play(btn.dataset.snd);
-});
-
 /* ---------- weather strip (Open-Meteo, free, no key) ---------- */
 const Wx = (() => {
   const KEY = 'puls.wx.v2', TTL = 30 * 60 * 1000;
@@ -2278,8 +2007,8 @@ const Wx = (() => {
   return { init: init, locate: locate };
 })();
 
-renderPresets();
-paintFocus();
+renderBreathPats();
+breathPaintTotals();
 renderAll();
 Wx.init();
 setInterval(tick, 30000);
