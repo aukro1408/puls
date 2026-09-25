@@ -1165,7 +1165,7 @@ function renderStrip() {
     b.type = 'button';
     b.className = 'day' + (ds === t ? ' today' : '') + (ds === selDate ? ' sel' : '');
     b.dataset.ds = ds;
-    b.innerHTML = `${withItems.has(ds) ? '<i class="hdot"></i>' : ''}<span class="dow">${DAYS[d.getDay()]}</span><span class="num">${d.getDate()}</span>`;
+    b.innerHTML = `${(withItems.has(ds) || ds === t) ? '<i class="hdot"></i>' : ''}<span class="dow">${DAYS[d.getDay()]}</span><span class="num">${d.getDate()}</span>`;
     b.setAttribute('aria-label', dayLabelFor(ds));
     b.addEventListener('click', () => {
       selDate = ds;
@@ -1626,6 +1626,7 @@ function checkStarts() {
 
 /* ---------- общий рендер / тик ---------- */
 let lastSig = '';
+let lastDay = todayStr();
 function sigFor() {
   return selDate + '|' + state.items.map(i => `${i.id}:${i.done ? 1 : 0}:${i.date}:${i.time}:${i.title}`).join(';');
 }
@@ -1635,7 +1636,9 @@ function renderAll() {
 }
 function tick() {
   renderHero();
-  if (sigFor() !== lastSig) renderAll();
+  const nowDay = todayStr();
+  if (nowDay !== lastDay) { lastDay = nowDay; renderAll(); }
+  else if (sigFor() !== lastSig) renderAll();
   checkStarts();
 }
 
