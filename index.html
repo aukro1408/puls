@@ -38,15 +38,20 @@ img{display:block}
 
 /* ---------- живой фон ---------- */
 .bgfx{display:none}
-body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+body.livebg{background:#FAF3E7}
+body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#F6EFDF 0%,#FAF3E7 45%,#F8EEDC 100%)}
 body.livebg .app{position:relative;z-index:1}
-.bgfx i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;will-change:transform}
-.bgfx .b1{width:54vmax;height:54vmax;left:-15vmax;top:-13vmax;background:#C4B0F0;animation:bgd1 28s ease-in-out infinite alternate}
-.bgfx .b2{width:42vmax;height:42vmax;right:-11vmax;top:24%;background:#9FD0EE;animation:bgd2 34s ease-in-out infinite alternate}
-.bgfx .b3{width:46vmax;height:46vmax;left:6%;bottom:-15vmax;background:#F3BFD9;animation:bgd3 30s ease-in-out infinite alternate}
-@keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(10vmax,8vmax) scale(1.18)}}
-@keyframes bgd2{from{transform:translate(0,0) scale(1.12)}to{transform:translate(-9vmax,6vmax) scale(1)}}
-@keyframes bgd3{from{transform:translate(0,0) scale(1)}to{transform:translate(7vmax,-9vmax) scale(1.22)}}
+.bgfx i{position:absolute;border-radius:50%;filter:blur(70px);will-change:transform}
+.bgfx .b1{width:72vmax;height:72vmax;left:-22vmax;top:-24vmax;background:#A9BC7E;opacity:.8;animation:bgd1 30s ease-in-out infinite alternate}
+.bgfx .b2{width:64vmax;height:64vmax;left:6vmax;top:20%;background:#F2674F;opacity:.62;animation:bgd2 36s ease-in-out infinite alternate}
+.bgfx .b3{width:60vmax;height:60vmax;left:-16vmax;top:52%;background:#F5A54B;opacity:.68;animation:bgd3 32s ease-in-out infinite alternate}
+.bgfx .b4{width:68vmax;height:68vmax;right:-22vmax;bottom:-26vmax;background:#FDF8EC;opacity:.95;animation:bgd4 40s ease-in-out infinite alternate}
+.bgfx .b5{width:46vmax;height:46vmax;right:-12vmax;top:-10vmax;background:#F1E4C8;opacity:.75;animation:bgd5 28s ease-in-out infinite alternate}
+@keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(9vmax,7vmax) scale(1.15)}}
+@keyframes bgd2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-8vmax,7vmax) scale(1)}}
+@keyframes bgd3{from{transform:translate(0,0) scale(1)}to{transform:translate(8vmax,-8vmax) scale(1.18)}}
+@keyframes bgd4{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-7vmax,-6vmax) scale(1.2)}}
+@keyframes bgd5{from{transform:translate(0,0) scale(1)}to{transform:translate(-6vmax,9vmax) scale(1.15)}}
 @media (prefers-reduced-motion:reduce){.bgfx i{animation:none}}
 .screen{display:none}
 .screen.active{display:block;animation:fadein .4s cubic-bezier(.22,1,.36,1)}
@@ -922,7 +927,7 @@ html[data-theme="dark"]{color-scheme:light !important}
 </style>
 </head>
 <body>
-<div class="bgfx" id="bgfx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+<div class="bgfx" id="bgfx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></div>
 <div class="app">
 
   <!-- PLAN -->
