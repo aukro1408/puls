@@ -182,27 +182,32 @@ transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
 .catbtn.on .clab{color:var(--ink)}
 
 /* ---------- карточка задачи ---------- */
-.pcard.taskcard{display:flex;align-items:center;gap:13px;padding:14px;border-radius:22px;
-background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+.pcard.taskcard{display:flex;align-items:center;gap:13px;padding:15px 14px;border-radius:24px;position:relative;overflow:hidden;
+background:linear-gradient(120deg,#ffffff 25%,var(--tint,#F1EDFF) 180%);
 border:1px solid rgba(255,255,255,.9)}
-.tc-ico{width:50px;height:50px;flex:none;border-radius:16px;background:var(--dot);display:grid;place-items:center;color:#fff;
-box-shadow:0 8px 16px -8px rgba(60,45,110,.45),inset 0 1px 2px rgba(255,255,255,.55)}
-.tc-ico svg{width:25px;height:25px}
-.tc-mid{flex:1;min-width:0}
+.pcard.taskcard::after{content:"";position:absolute;top:-52px;right:-52px;width:160px;height:160px;border-radius:50%;
+background:var(--dot);opacity:.18;filter:blur(30px);pointer-events:none}
+.tc-ico{width:54px;height:54px;flex:none;border-radius:18px;background:var(--dot);display:grid;place-items:center;color:#fff;
+box-shadow:0 10px 20px -10px rgba(60,45,110,.5);position:relative;z-index:1}
+.tc-ico svg{width:26px;height:26px}
+.tc-mid{flex:1;min-width:0;position:relative;z-index:1}
 .tc-top{display:flex;align-items:center;gap:8px}
-.tc-time{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:#1D1B28}
-.tc-cat{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--tint);color:rgba(29,27,40,.72)}
-.pcard.taskcard h3{position:static;margin:5px 0 2px;font-size:16px;font-weight:800;letter-spacing:-.01em;line-height:1.25;color:#1D1B28}
-.pcard.taskcard .meta{position:static;margin:0;font-size:12px;font-weight:700;color:var(--muted)}
-.tc-side{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
-.pcard.taskcard .px{width:26px;height:26px;font-size:16px;color:rgba(29,27,40,.32)}
-.pcard.taskcard .donebtn{width:34px!important;height:34px!important;border-radius:50%!important;
-border:2px solid rgba(29,27,40,.22)!important;background:rgba(255,255,255,.5)!important;color:transparent!important;box-shadow:none!important}
-.pcard.taskcard .donebtn svg{width:16px!important;height:16px!important}
-.pcard.taskcard.done{opacity:.55}
+.tc-time{font-size:16.5px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:#1D1B28}
+.tc-cat{font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--tint);color:rgba(29,27,40,.72)}
+.pcard.taskcard h3{margin:4px 0 3px;font-size:16.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;color:#1D1B28}
+.pcard.taskcard .meta{margin:0;font-size:12px;font-weight:700;color:var(--muted)}
+.tc-side{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:10px;flex:none;margin-left:auto;align-self:stretch;padding:2px 0;position:relative;z-index:1}
+.pcard.taskcard .px{width:26px;height:26px;font-size:15px;color:rgba(29,27,40,.3);border-radius:50%}
+.pcard.taskcard .px:active{transform:scale(.85)}
+.pcard.taskcard .donebtn{width:38px!important;height:38px!important;min-width:38px!important;flex:none!important;border-radius:50%!important;
+border:2px solid rgba(112,87,232,.45)!important;background:#fff!important;color:transparent!important;box-shadow:0 4px 12px -4px rgba(112,87,232,.4)!important;
+display:grid!important;place-items:center!important;padding:0!important}
+.pcard.taskcard .donebtn svg{width:17px!important;height:17px!important;opacity:0!important}
+.pcard.taskcard .donebtn:active{transform:scale(.88)}
+.pcard.taskcard.done{opacity:.6}
 .pcard.taskcard.done h3{text-decoration:line-through;text-decoration-thickness:2px}
 .pcard.taskcard.done .donebtn{background:#7057E8!important;border-color:#7057E8!important;color:#fff!important}
-.pcard.taskcard.done .donebtn svg{stroke:#fff!important}
+.pcard.taskcard.done .donebtn svg{opacity:1!important;stroke:#fff!important}
 .bignum{font-size:34px;font-weight:800;letter-spacing:-.03em;margin:10px 0 2px;position:relative;z-index:2}
 .minibar{height:7px;border-radius:99px;background:rgba(255,255,255,.5);overflow:hidden;margin-top:10px;position:relative;z-index:2}
 .minibar i{display:block;height:100%;border-radius:99px;background:#191923;transition:width .8s cubic-bezier(.22,1,.36,1)}
@@ -350,7 +355,7 @@ box-shadow:0 14px 30px -10px rgba(0,0,0,.5);animation:toastin .45s cubic-bezier(
 }
 .cards > .pcard.focuscard .pcard-bot{margin-top:auto}
 .cards > .pcard.minicard .minibar{margin-top:auto}
-.cards > .pcard:not(.focuscard):not(.minicard){
+.cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard){
   grid-column:1 / -1;
   min-height:142px;
   display:grid;
@@ -359,22 +364,22 @@ box-shadow:0 14px 30px -10px rgba(0,0,0,.5);animation:toastin .45s cubic-bezier(
   align-items:center;
   column-gap:12px;
 }
-.cards > .pcard:not(.focuscard):not(.minicard) .pcard-top{
+.cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard) .pcard-top{
   grid-column:1 / -1;
   grid-row:1;
 }
-.cards > .pcard:not(.focuscard):not(.minicard) h3{
+.cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard) h3{
   grid-column:1;
   grid-row:2;
   align-self:end;
   margin:10px 0 3px;
 }
-.cards > .pcard:not(.focuscard):not(.minicard) .meta{
+.cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard) .meta{
   grid-column:1;
   grid-row:3;
   align-self:start;
 }
-.cards > .pcard:not(.focuscard):not(.minicard) .pcard-bot{
+.cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard) .pcard-bot{
   grid-column:2;
   grid-row:2 / 4;
   align-self:center;
@@ -385,7 +390,7 @@ box-shadow:0 14px 30px -10px rgba(0,0,0,.5);animation:toastin .45s cubic-bezier(
   .cards{column-gap:9px;row-gap:10px}
   .cards > .pcard.focuscard,
   .cards > .pcard.minicard{height:178px;min-height:178px}
-  .cards > .pcard:not(.focuscard):not(.minicard){min-height:132px}
+  .cards > .pcard:not(.focuscard):not(.minicard):not(.taskcard){min-height:132px}
 }
 
 /* ---------- light-only polish: frosted navigation + vivid accent ---------- */
@@ -1273,13 +1278,15 @@ function pcard(it, idx, now) {
     meal: '#FFF4C2',
     rest: '#FFD9EB'
   };
+  const key = ICONS[it.icon] ? it.icon : 'work';
+  el.style.setProperty('--tint', cardTints[key]);
+  el.style.setProperty('--dot', ICONS[key]);
   el.style.animationDelay = Math.min(idx * 70, 420) + 'ms';
   const rel = relText(it, now);
-  const key = ICONS[it.icon] ? it.icon : 'work';
   el.innerHTML = `
     <span class="tc-ico" aria-hidden="true" style="--dot:${ICONS[key]}">${CAT_SVG[key]}</span>
     <div class="tc-mid">
-      <div class="tc-top"><b class="tc-time">${it.time}</b><span class="tc-cat" style="--tint:${cardTints[key]}">${ICON_NAMES[key]}</span></div>
+      <div class="tc-top"><b class="tc-time">${it.time}</b><span class="tc-cat">${ICON_NAMES[key]}</span></div>
       <h3></h3>
       <p class="meta">${it.done ? dayLabelFor(it.date) + ' · ' + it.time : rel}</p>
     </div>
