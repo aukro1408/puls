@@ -219,6 +219,15 @@ padding:15px 30px;font-size:15.5px;transition:transform .25s cubic-bezier(.34,1.
 .prof .avatar{width:56px;height:56px;font-size:24px}
 .prof b{font-size:17px;font-weight:800;display:block}
 .prof span{font-size:12.5px;color:var(--muted);font-weight:700}
+.prof-id{flex:1;min-width:0}
+.prof-id [hidden]{display:none !important}
+.prof-id input{font-family:inherit;font-size:17px;font-weight:800;color:inherit;width:100%;
+border:2px solid var(--accent);border-radius:12px;padding:5px 10px;background:#fff;outline:none}
+.pedit{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;
+background:rgba(0,0,0,.06);color:var(--muted);transition:transform .2s,background .2s,color .2s}
+.pedit:active{transform:scale(.88)}
+.pedit svg{width:18px;height:18px}
+.pedit.save{background:var(--accent);color:#fff}
 .setcard{margin-top:12px;background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;animation:rise .6s cubic-bezier(.22,1,.36,1) .06s both}
 .srow{display:flex;align-items:center;gap:14px;padding:16px 18px;width:100%;text-align:left;transition:background .2s}
 .srow:active{background:var(--input)}
@@ -863,7 +872,7 @@ html[data-theme="dark"]{color-scheme:light !important}
   <section class="screen active" id="scr-plan">
     <header class="topbar">
       <div class="avatar">D</div>
-      <div class="hello"><b>Привет, Denis</b><span id="todayLine">Сегодня</span></div>
+      <div class="hello"><b id="helloName">Привет, Denis</b><span id="todayLine">Сегодня</span></div>
       <button class="wx-mini" id="wxStrip" aria-label="Погода, тап — определить местоположение">
         <span class="wx-ico" id="wxIco">🌤️</span>
         <span class="wx-tx"><b id="wxTemp">--°</b><small id="wxCity">…</small></span>
@@ -942,7 +951,14 @@ html[data-theme="dark"]{color-scheme:light !important}
     <div class="pagehead"><h1>Настройки</h1><p>Пульс 2.0</p></div>
     <div class="prof">
       <div class="avatar" id="profileMascot" aria-hidden="true"></div>
-      <div><b>Denis</b><span>Ваш личный планировщик</span></div>
+      <div class="prof-id">
+        <b id="profName">Denis</b>
+        <input id="nameInput" maxlength="24" placeholder="Ваше имя" autocomplete="off" hidden />
+        <span>Ваш личный планировщик</span>
+      </div>
+      <button class="pedit" id="nameEditBtn" aria-label="Изменить имя">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      </button>
     </div>
     <div class="setcard mascot-settings">
       <div class="mhead"><b>Маскот</b><small>Выберите зверька — он будет жить в шапке главного экрана</small></div>
@@ -1040,7 +1056,7 @@ const MONTHS = ['января','февраля','марта','апреля','м�
 
 /* ---------- состояние ---------- */
 const KEY = 'ritm.v1';
-let state = { items: [], nextId: 1, settings: { theme: 'light', notify: false, sound: true } };
+let state = { items: [], nextId: 1, settings: { theme: 'light', notify: false, sound: true, name: 'Denis' } };
 let selDate = todayStr();
 function todayStr(d) {
   d = d || new Date();
@@ -1546,7 +1562,40 @@ function renderSettings() {
   $('#swNotify').classList.toggle('on', state.settings.notify);
   $('#swSound').classList.toggle('on', state.settings.sound);
   $('#swTheme').classList.toggle('on', state.settings.theme === 'dark');
+  renderName();
 }
+
+/* ---------- имя пользователя ---------- */
+function renderName() {
+  const n = (state.settings.name || '').trim() || 'Denis';
+  const h = $('#helloName'); if (h) h.textContent = 'Привет, ' + n;
+  const p = $('#profName'); if (p) p.textContent = n;
+}
+const NAME_PENCIL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>';
+const NAME_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+let editingName = false;
+function setNameEditing(on) {
+  editingName = on;
+  const b = $('#profName'), inp = $('#nameInput'), btn = $('#nameEditBtn');
+  if (!b || !inp || !btn) return;
+  b.hidden = on; inp.hidden = !on;
+  btn.innerHTML = on ? NAME_CHECK_SVG : NAME_PENCIL_SVG;
+  btn.classList.toggle('save', on);
+  btn.setAttribute('aria-label', on ? 'Сохранить имя' : 'Изменить имя');
+  if (on) { inp.value = (state.settings.name || '').trim() || 'Denis'; setTimeout(() => { inp.focus(); inp.select(); }, 60); }
+}
+function saveName() {
+  const inp = $('#nameInput');
+  const n = ((inp && inp.value) || '').trim().slice(0, 24) || 'Denis';
+  state.settings.name = n; save(); renderName(); setNameEditing(false);
+  toast('Готово, ' + n + '!');
+}
+$('#nameEditBtn').addEventListener('click', () => editingName ? saveName() : setNameEditing(true));
+$('#nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveName();
+  else if (e.key === 'Escape') setNameEditing(false);
+});
+$('#nameInput').addEventListener('blur', () => setTimeout(() => { if (editingName) saveName(); }, 160));
 $('#rowNotify').addEventListener('click', () => {
   if (!('Notification' in window)) { toast('Браузер не поддерживает уведомления'); return; }
   if (state.settings.notify) {
