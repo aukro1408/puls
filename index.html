@@ -166,6 +166,43 @@ box-shadow:0 10px 20px -8px rgba(0,0,0,.5);transition:transform .25s cubic-bezie
 .playbtn:active{transform:scale(.88)}
 .playbtn svg{width:20px;height:20px;margin-left:2px}
 .pcard.minicard{background:linear-gradient(135deg,#F7C3DC,#F0A4C9)}
+
+/* ---------- выбор категории ---------- */
+.catpick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.catbtn{display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 4px;border-radius:18px;
+background:transparent;transition:background .2s,transform .15s}
+.catbtn:active{transform:scale(.93)}
+.catbtn .cdot{width:54px;height:54px;border-radius:50%;background:var(--dot);display:grid;place-items:center;color:#fff;
+box-shadow:0 8px 16px -8px rgba(60,45,110,.45),inset 0 1px 2px rgba(255,255,255,.55);
+transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.catbtn .cdot svg{width:26px;height:26px}
+.catbtn .clab{font-size:11.5px;font-weight:800;color:var(--muted);transition:color .2s}
+.catbtn.on{background:rgba(112,87,232,.09)}
+.catbtn.on .cdot{transform:scale(1.07);box-shadow:0 0 0 2.5px #fff,0 0 0 5.5px rgba(112,87,232,.6),0 10px 18px -8px rgba(60,45,110,.5)}
+.catbtn.on .clab{color:var(--ink)}
+
+/* ---------- карточка задачи ---------- */
+.pcard.taskcard{display:flex;align-items:center;gap:13px;padding:14px;border-radius:22px;
+background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,.9)}
+.tc-ico{width:50px;height:50px;flex:none;border-radius:16px;background:var(--dot);display:grid;place-items:center;color:#fff;
+box-shadow:0 8px 16px -8px rgba(60,45,110,.45),inset 0 1px 2px rgba(255,255,255,.55)}
+.tc-ico svg{width:25px;height:25px}
+.tc-mid{flex:1;min-width:0}
+.tc-top{display:flex;align-items:center;gap:8px}
+.tc-time{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:#1D1B28}
+.tc-cat{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--tint);color:rgba(29,27,40,.72)}
+.pcard.taskcard h3{position:static;margin:5px 0 2px;font-size:16px;font-weight:800;letter-spacing:-.01em;line-height:1.25;color:#1D1B28}
+.pcard.taskcard .meta{position:static;margin:0;font-size:12px;font-weight:700;color:var(--muted)}
+.tc-side{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+.pcard.taskcard .px{width:26px;height:26px;font-size:16px;color:rgba(29,27,40,.32)}
+.pcard.taskcard .donebtn{width:34px!important;height:34px!important;border-radius:50%!important;
+border:2px solid rgba(29,27,40,.22)!important;background:rgba(255,255,255,.5)!important;color:transparent!important;box-shadow:none!important}
+.pcard.taskcard .donebtn svg{width:16px!important;height:16px!important}
+.pcard.taskcard.done{opacity:.55}
+.pcard.taskcard.done h3{text-decoration:line-through;text-decoration-thickness:2px}
+.pcard.taskcard.done .donebtn{background:#7057E8!important;border-color:#7057E8!important;color:#fff!important}
+.pcard.taskcard.done .donebtn svg{stroke:#fff!important}
 .bignum{font-size:34px;font-weight:800;letter-spacing:-.03em;margin:10px 0 2px;position:relative;z-index:2}
 .minibar{height:7px;border-radius:99px;background:rgba(255,255,255,.5);overflow:hidden;margin-top:10px;position:relative;z-index:2}
 .minibar i{display:block;height:100%;border-radius:99px;background:#191923;transition:width .8s cubic-bezier(.22,1,.36,1)}
@@ -1041,7 +1078,7 @@ html[data-theme="dark"]{color-scheme:light !important}
         <div class="field"><span>День</span><input type="date" id="fDate" required /></div>
         <div class="field"><span>Время</span><input type="time" id="fTime" required /></div>
       </div>
-      <div class="field"><span>Иконка</span><div class="pick" id="iconPick"></div></div>
+      <div class="field"><span>Категория</span><div class="catpick" id="iconPick"></div></div>
       <button class="btn dark wide" type="submit" style="margin-top:6px">Добавить</button>
     </form>
   </div>
@@ -1062,6 +1099,14 @@ const ICONS = {
   rest: 'linear-gradient(135deg,#F04F9A 0%,#FF9BCB 55%,#F04F9A 100%)'
 };
 const ICON_NAMES = { work:'Работа', walk:'Прогулка', meet:'Встреча', sport:'Спорт', meal:'Еда', rest:'Отдых' };
+const CAT_SVG = {
+  work: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12.5h18"/></svg>',
+  walk: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="5" r="2"/><path d="M13 8l-3.2 5M13 8l2.5 1.5L18 10"/><path d="M9.8 13 8 16.5 8.6 21M9.8 13l2.7 3 .4 5"/></svg>',
+  meet: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="16.8" cy="9" r="2.5"/><path d="M16.2 14.6c2.7.4 4.8 2.4 4.8 5.4"/></svg>',
+  sport: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>',
+  meal: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5h16"/><path d="M5.5 18.5a6.5 6.5 0 0 1 13 0"/><path d="M12 12V10"/><circle cx="12" cy="8.8" r="1"/></svg>',
+  rest: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.2A8.2 8.2 0 1 1 10.8 4 6.6 6.6 0 0 0 20 13.2z"/></svg>'
+};
 const PALETTE = [
   'linear-gradient(135deg,#FFC46B,#FF9E57)',
   'linear-gradient(135deg,#CFC2F7,#B3A1EF)',
@@ -1219,24 +1264,27 @@ const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
 function pcard(it, idx, now) {
   const el = document.createElement('article');
-  el.className = 'pcard' + (it.done ? ' done' : '');
+  el.className = 'pcard taskcard' + (it.done ? ' done' : '');
   const cardTints = {
-    work: 'linear-gradient(135deg,#D7EFFF 0%,#B9E4FA 100%)',
-    walk: 'linear-gradient(135deg,#D7F8E9 0%,#B6EBD2 100%)',
-    meet: 'linear-gradient(135deg,#E6DCFF 0%,#CDBBFF 100%)',
-    sport: 'linear-gradient(135deg,#FFE0C8 0%,#FFC18F 100%)',
-    meal: 'linear-gradient(135deg,#FFF4C2 0%,#FFE58A 100%)',
-    rest: 'linear-gradient(135deg,#FFD9EB 0%,#FFB7D6 100%)'
+    work: '#D7EFFF',
+    walk: '#D7F8E9',
+    meet: '#E6DCFF',
+    sport: '#FFE0C8',
+    meal: '#FFF4C2',
+    rest: '#FFD9EB'
   };
-  el.style.background = cardTints[it.icon] || PALETTE[idx % PALETTE.length];
   el.style.animationDelay = Math.min(idx * 70, 420) + 'ms';
   const rel = relText(it, now);
+  const key = ICONS[it.icon] ? it.icon : 'work';
   el.innerHTML = `
-    <div class="pcard-top"><span class="pill">${it.time}</span><button class="px" aria-label="Удалить">×</button></div>
-    <h3></h3>
-    <p class="meta">${it.done ? dayLabelFor(it.date) + ' · ' + it.time : rel}</p>
-    <div class="pcard-bot">
-      <span class="cat category-dot" aria-hidden="true" style="--dot:${ICONS[it.icon] || ICONS.work}"></span>
+    <span class="tc-ico" aria-hidden="true" style="--dot:${ICONS[key]}">${CAT_SVG[key]}</span>
+    <div class="tc-mid">
+      <div class="tc-top"><b class="tc-time">${it.time}</b><span class="tc-cat" style="--tint:${cardTints[key]}">${ICON_NAMES[key]}</span></div>
+      <h3></h3>
+      <p class="meta">${it.done ? dayLabelFor(it.date) + ' · ' + it.time : rel}</p>
+    </div>
+    <div class="tc-side">
+      <button class="px" aria-label="Удалить">×</button>
       <button class="donebtn" aria-label="${it.done ? 'Снять отметку' : 'Выполнено'}">${CHECK_SVG}</button>
     </div>`;
   el.querySelector('h3').textContent = it.title;
@@ -1325,10 +1373,9 @@ function buildPickers() {
   Object.keys(ICONS).forEach(k => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = k === pickIcon ? 'on' : '';
-    b.title = ICON_NAMES[k];
+    b.className = 'catbtn' + (k === pickIcon ? ' on' : '');
     b.setAttribute('aria-label', ICON_NAMES[k]);
-    b.innerHTML = `<span class="category-dot" style="--dot:${ICONS[k]}"></span>`;
+    b.innerHTML = `<span class="cdot" style="--dot:${ICONS[k]}">${CAT_SVG[k]}</span><span class="clab">${ICON_NAMES[k]}</span>`;
     b.addEventListener('click', () => { pickIcon = k; ip.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
     ip.appendChild(b);
   });
