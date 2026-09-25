@@ -36,23 +36,36 @@ input,select{font:inherit;color:inherit}
 img{display:block}
 .app{max-width:430px;margin:0 auto;padding:0 20px calc(120px + env(safe-area-inset-bottom))}
 
-/* ---------- живой фон ---------- */
+/* ---------- живой фон: mesh-градиент ---------- */
 .bgfx{display:none}
-body.livebg{background:#FAF3E7}
-body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#F6EFDF 0%,#FAF3E7 45%,#F8EEDC 100%)}
+body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 body.livebg .app{position:relative;z-index:1}
-.bgfx i{position:absolute;border-radius:50%;filter:blur(60px);will-change:transform}
-.bgfx .b1{width:74vmax;height:74vmax;left:-24vmax;top:-26vmax;background:#A2B23F;opacity:.9;animation:bgd1 30s ease-in-out infinite alternate}
-.bgfx .b2{width:66vmax;height:66vmax;left:4vmax;top:18%;background:#F04E32;opacity:.85;animation:bgd2 36s ease-in-out infinite alternate}
-.bgfx .b3{width:62vmax;height:62vmax;left:-18vmax;top:50%;background:#F68A1E;opacity:.9;animation:bgd3 32s ease-in-out infinite alternate}
-.bgfx .b4{width:70vmax;height:70vmax;right:-24vmax;bottom:-28vmax;background:#FDF8EC;opacity:.95;animation:bgd4 40s ease-in-out infinite alternate}
-.bgfx .b5{width:48vmax;height:48vmax;right:-14vmax;top:-12vmax;background:#F5E3B8;opacity:.85;animation:bgd5 28s ease-in-out infinite alternate}
-@keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(9vmax,7vmax) scale(1.15)}}
-@keyframes bgd2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-8vmax,7vmax) scale(1)}}
-@keyframes bgd3{from{transform:translate(0,0) scale(1)}to{transform:translate(8vmax,-8vmax) scale(1.18)}}
-@keyframes bgd4{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-7vmax,-6vmax) scale(1.2)}}
-@keyframes bgd5{from{transform:translate(0,0) scale(1)}to{transform:translate(-6vmax,9vmax) scale(1.15)}}
-@media (prefers-reduced-motion:reduce){.bgfx i{animation:none}}
+.bgwrap{position:absolute;inset:-20%;width:140%;height:140%;will-change:transform,filter}
+.bgwrap canvas{width:100%;height:100%;display:block}
+.bgnoise{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay}
+/* настройки живого фона */
+.bgcontrols{padding:2px 18px 18px;display:grid;gap:13px}
+.bgshead{display:flex;align-items:center;justify-content:space-between}
+.bgshead b{font-size:13px;font-weight:800}
+.bshuffle{font-size:12.5px;font-weight:800;color:var(--accent);padding:7px 13px;border-radius:12px;background:var(--input)}
+.bshuffle:active{transform:scale(.94)}
+.bgpresets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bgpreset{border:1.5px solid var(--line);border-radius:16px;padding:10px 6px;background:var(--input);display:grid;gap:7px;justify-items:center;transition:border-color .2s,transform .15s}
+.bgpreset:active{transform:scale(.95)}
+.bgpreset.on{border-color:var(--accent)}
+.bgsw{display:flex;gap:4px}
+.bgsw i{width:15px;height:15px;border-radius:50%;flex:none}
+.bgname{font-size:11px;font-weight:800;color:var(--muted)}
+.bgpreset.on .bgname{color:var(--ink)}
+.bctl-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;font-weight:800;color:var(--muted);margin-bottom:7px}
+.bctl-top b{color:var(--ink);font-size:12.5px}
+input[type=range].bgrange{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--line);outline:none;padding:0}
+input[type=range].bgrange::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+input[type=range].bgrange::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+.bgtoggle{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:2px 0}
+.bgtoggle .st{flex:1;min-width:0}
+.bgtoggle .st b{display:block;font-size:14px;font-weight:800}
+.bgtoggle .st small{color:var(--muted);font-weight:700;font-size:12px}
 .screen{display:none}
 .screen.active{display:block;animation:fadein .4s cubic-bezier(.22,1,.36,1)}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -927,7 +940,11 @@ html[data-theme="dark"]{color-scheme:light !important}
 </style>
 </head>
 <body>
-<div class="bgfx" id="bgfx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></div>
+<div class="bgfx" id="bgfx" aria-hidden="true">
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="bgNoiseF"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter></svg>
+      <div class="bgwrap" id="bgwrap"><canvas id="bgcanvas"></canvas></div>
+      <div class="bgnoise" id="bgnoise" style="filter:url(#bgNoiseF)"></div>
+    </div>
 <div class="app">
 
   <!-- PLAN -->
@@ -1047,6 +1064,32 @@ html[data-theme="dark"]{color-scheme:light !important}
         <span class="st"><b>Живой фон</b><small>Дрейфующие цветные пятна</small></span>
         <span class="switch" id="swLiveBg"></span>
       </button>
+      <div class="bgcontrols" id="livebgControls">
+        <div>
+          <div class="bgshead"><b>Палитра</b><button class="bshuffle" id="bgShuffle">Перемешать</button></div>
+          <div class="bgpresets" id="bgPresets" style="margin-top:9px"></div>
+        </div>
+        <div class="bctl">
+          <div class="bctl-top"><span>Размытие</span><b id="bgBlurVal">80px</b></div>
+          <input type="range" class="bgrange" id="bgBlur" min="20" max="140" step="1" value="80">
+        </div>
+        <div class="bctl">
+          <div class="bctl-top"><span>Скорость анимации</span><b id="bgSpeedVal">1.0x</b></div>
+          <input type="range" class="bgrange" id="bgSpeed" min="0.1" max="3" step="0.1" value="1">
+        </div>
+        <div class="bctl">
+          <div class="bctl-top"><span>Зерно плёнки</span><b id="bgNoiseVal">5.5%</b></div>
+          <input type="range" class="bgrange" id="bgNoise" min="0" max="20" step="0.5" value="5.5">
+        </div>
+        <div class="bctl">
+          <div class="bctl-top"><span>Количество пятен</span><b id="bgCountVal">6</b></div>
+          <input type="range" class="bgrange" id="bgCount" min="3" max="10" step="1" value="6">
+        </div>
+        <button class="bgtoggle" id="rowBgMagnet">
+          <span class="st"><b>Магнит пальца</b><small>Пятна тянутся за касанием</small></span>
+          <span class="switch" id="swBgMagnet"></span>
+        </button>
+      </div>
     </div>
     <div class="setcard">
       <button class="srow" id="demoBtn">
@@ -1133,6 +1176,150 @@ const MONTHS = ['января','февраля','марта','апреля','м�
 const KEY = 'ritm.v1';
 let state = { items: [], nextId: 1, settings: { theme: 'light', notify: false, sound: true, name: 'Denis', livebg: true } };
 let selDate = todayStr();
+
+/* ---------- живой фон: mesh-градиент (canvas) ---------- */
+const BG_PRESETS = [
+  { id: 'aurora', name: 'Аврора', bg: '#f4f3ef', dark: false, colors: ['#ff4d30', '#c5d86d', '#70c1ff', '#ffaa4d', '#ff2a6d', '#e2efa8'] },
+  { id: 'sunset', name: 'Неоновый закат', bg: '#0c0714', dark: true, colors: ['#ff007f', '#8a2be2', '#ff6b35', '#00f5ff', '#ff1493', '#7b68ee'] },
+  { id: 'pastel', name: 'Пастель', bg: '#fafafe', dark: false, colors: ['#d8b4fe', '#a7f3d0', '#fbcfe8', '#fef08a', '#bae6fd', '#fed7aa'] },
+  { id: 'cyber', name: 'Киберпанк', bg: '#050811', dark: true, colors: ['#ff0055', '#00ffe0', '#9d00ff', '#ffb700', '#0077ff', '#ff00aa'] },
+  { id: 'forest', name: 'Лесное свечение', bg: '#0b130e', dark: true, colors: ['#059669', '#34d399', '#a3e635', '#f59e0b', '#10b981', '#84cc16'] },
+  { id: 'gray', name: 'Монохром', bg: '#eef0f2', dark: false, colors: ['#1e293b', '#475569', '#94a3b8', '#cbd5e1', '#64748b', '#334155'] },
+];
+function bgPreset(id) { return BG_PRESETS.find(p => p.id === id) || BG_PRESETS[0]; }
+function bgCfg() {
+  const v = state.settings.livebg;
+  const d = { on: true, preset: 'aurora', colors: null, blur: 80, speed: 1, noise: 5.5, blobs: 6, magnet: true };
+  if (v && typeof v === 'object') return Object.assign(d, v);
+  d.on = v !== false;
+  return d;
+}
+function bgSave(patch) {
+  const c = bgCfg();
+  Object.assign(c, patch);
+  state.settings.livebg = c;
+  save();
+}
+const BgFx = (() => {
+  let canvas, ctx, wrap, noiseEl, W = 0, H = 0, blobs = [], raf = 0, running = false, bound = false;
+  const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, active: false };
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function hexA(hex, a) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const n = parseInt(c, 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+  class Blob {
+    constructor(i, color) { this.i = i; this.color = color; this.spawn(); }
+    spawn() {
+      this.x = Math.random() * W; this.y = Math.random() * H;
+      const m = Math.min(W, H);
+      this.r = m * (0.28 + Math.random() * 0.22);
+      this.vx = (Math.random() - .5) * 1.2; this.vy = (Math.random() - .5) * 1.2;
+      this.ph = Math.random() * 6.283; this.ps = .005 + Math.random() * .01;
+      this.ox = 0; this.oy = 0;
+    }
+    step(sp, magnet) {
+      this.x += this.vx * sp; this.y += this.vy * sp; this.ph += this.ps * sp;
+      const r = this.r * (1 + Math.sin(this.ph) * .15), mg = r * .5;
+      if (this.x < -mg) { this.x = -mg; this.vx *= -1; }
+      if (this.x > W + mg) { this.x = W + mg; this.vx *= -1; }
+      if (this.y < -mg) { this.y = -mg; this.vy *= -1; }
+      if (this.y > H + mg) { this.y = H + mg; this.vy *= -1; }
+      if (magnet && mouse.active) {
+        const dx = mouse.x - this.x, dy = mouse.y - this.y, d = Math.hypot(dx, dy), md = Math.max(W, H) * .4;
+        if (d < md && d > 1) {
+          const f = (1 - d / md) * 35 * (this.i % 2 ? -.6 : 1);
+          this.ox += ((dx / d) * f - this.ox) * .05;
+          this.oy += ((dy / d) * f - this.oy) * .05;
+        } else { this.ox *= .95; this.oy *= .95; }
+      } else { this.ox *= .95; this.oy *= .95; }
+    }
+    draw(c) {
+      const x = this.x + this.ox, y = this.y + this.oy, r = this.r * (1 + Math.sin(this.ph) * .15);
+      const g = c.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, this.color);
+      g.addColorStop(.65, hexA(this.color, .7));
+      g.addColorStop(1, hexA(this.color, 0));
+      c.fillStyle = g;
+      c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+    }
+  }
+  function size() {
+    canvas = canvas || document.getElementById('bgcanvas');
+    wrap = wrap || document.getElementById('bgwrap');
+    noiseEl = noiseEl || document.getElementById('bgnoise');
+    ctx = ctx || canvas.getContext('2d');
+    const r = wrap.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function palette() {
+    const cfg = bgCfg(), p = bgPreset(cfg.preset);
+    return cfg.colors && cfg.colors.length ? cfg.colors : p.colors;
+  }
+  function rebuild() {
+    const cfg = bgCfg(), pal = palette();
+    blobs = [];
+    for (let i = 0; i < cfg.blobs; i++) blobs.push(new Blob(i, pal[i % pal.length]));
+  }
+  function paint(p, animate) {
+    const cfg = bgCfg();
+    mouse.x += (mouse.tx - mouse.x) * .1;
+    mouse.y += (mouse.ty - mouse.y) * .1;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = p.bg;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = p.dark ? 'screen' : 'multiply';
+    for (const b of blobs) { if (animate) b.step(cfg.speed, cfg.magnet); b.draw(ctx); }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function frame() {
+    paint(bgPreset(bgCfg().preset), true);
+    raf = requestAnimationFrame(frame);
+  }
+  function applyFx() {
+    const cfg = bgCfg();
+    if (wrap) wrap.style.filter = 'blur(' + cfg.blur + 'px)';
+    if (noiseEl) noiseEl.style.opacity = (cfg.noise / 100).toString();
+  }
+  function bind() {
+    if (bound) return; bound = true;
+    window.addEventListener('resize', () => { if (running) { size(); applyFx(); } });
+    const move = e => {
+      const t = e.touches && e.touches[0];
+      const cx = t ? t.clientX : e.clientX, cy = t ? t.clientY : e.clientY;
+      if (cx == null || !wrap) return;
+      const r = wrap.getBoundingClientRect();
+      mouse.tx = cx - r.left; mouse.ty = cy - r.top; mouse.active = true;
+    };
+    const leave = () => { mouse.active = false; };
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('touchmove', move, { passive: true });
+    window.addEventListener('touchstart', move, { passive: true });
+    document.addEventListener('mouseleave', leave);
+    window.addEventListener('touchend', leave);
+    document.addEventListener('visibilitychange', () => {
+      cancelAnimationFrame(raf);
+      if (!document.hidden && running && !reduced) raf = requestAnimationFrame(frame);
+    });
+  }
+  return {
+    start() {
+      bind(); size(); rebuild(); applyFx();
+      running = true;
+      cancelAnimationFrame(raf);
+      if (reduced) paint(bgPreset(bgCfg().preset), false);
+      else raf = requestAnimationFrame(frame);
+    },
+    stop() { running = false; cancelAnimationFrame(raf); },
+    refresh() { if (!running) return; rebuild(); applyFx(); if (reduced) paint(bgPreset(bgCfg().preset), false); },
+    restyle() { applyFx(); if (running && reduced) paint(bgPreset(bgCfg().preset), false); }
+  };
+})();
 function todayStr(d) {
   d = d || new Date();
   const p = (n) => String(n).padStart(2,'0');
@@ -1641,7 +1828,8 @@ function renderSettings() {
   $('#swNotify').classList.toggle('on', state.settings.notify);
   $('#swSound').classList.toggle('on', state.settings.sound);
   $('#swTheme').classList.toggle('on', state.settings.theme === 'dark');
-  $('#swLiveBg').classList.toggle('on', state.settings.livebg !== false);
+  $('#swLiveBg').classList.toggle('on', bgCfg().on);
+  renderBgControls();
   renderName();
 }
 
@@ -1711,12 +1899,73 @@ $('#rowTheme').addEventListener('click', () => {
   renderSettings(); save();
 });
 function applyLiveBg() {
-  document.body.classList.toggle('livebg', state.settings.livebg !== false);
+  const c = bgCfg();
+  document.body.classList.toggle('livebg', c.on);
+  if (c.on) BgFx.start(); else BgFx.stop();
+  const ctl = document.getElementById('livebgControls');
+  if (ctl) ctl.style.display = c.on ? '' : 'none';
 }
 $('#rowLiveBg').addEventListener('click', () => {
-  state.settings.livebg = !(state.settings.livebg !== false);
+  const c = bgCfg();
+  c.on = !c.on;
+  state.settings.livebg = c;
   applyLiveBg(); renderSettings(); save();
-  toast(state.settings.livebg ? 'Живой фон включён' : 'Живой фон выключен');
+  toast(c.on ? 'Живой фон включён' : 'Живой фон выключен');
+});
+function renderBgControls() {
+  const cfg = bgCfg();
+  const grid = document.getElementById('bgPresets');
+  if (!grid) return;
+  grid.innerHTML = '';
+  BG_PRESETS.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'bgpreset' + (cfg.preset === p.id ? ' on' : '');
+    b.innerHTML = '<span class="bgsw">' + p.colors.slice(0, 4).map(c => '<i style="background:' + c + '"></i>').join('') + '</span><span class="bgname">' + p.name + '</span>';
+    b.addEventListener('click', () => { bgSave({ preset: p.id, colors: null }); BgFx.refresh(); renderBgControls(); });
+    grid.appendChild(b);
+  });
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  set('bgBlur', cfg.blur); set('bgSpeed', cfg.speed); set('bgNoise', cfg.noise); set('bgCount', cfg.blobs);
+  const txt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  txt('bgBlurVal', cfg.blur + 'px');
+  txt('bgSpeedVal', Number(cfg.speed).toFixed(1) + 'x');
+  txt('bgNoiseVal', Number(cfg.noise).toFixed(1) + '%');
+  txt('bgCountVal', cfg.blobs);
+  const sw = document.getElementById('swBgMagnet');
+  if (sw) sw.classList.toggle('on', cfg.magnet);
+}
+$('#bgBlur').addEventListener('input', e => {
+  const v = +e.target.value;
+  document.getElementById('bgBlurVal').textContent = v + 'px';
+  bgSave({ blur: v }); BgFx.restyle();
+});
+$('#bgSpeed').addEventListener('input', e => {
+  const v = +e.target.value;
+  document.getElementById('bgSpeedVal').textContent = v.toFixed(1) + 'x';
+  bgSave({ speed: v });
+});
+$('#bgNoise').addEventListener('input', e => {
+  const v = +e.target.value;
+  document.getElementById('bgNoiseVal').textContent = v.toFixed(1) + '%';
+  bgSave({ noise: v }); BgFx.restyle();
+});
+$('#bgCount').addEventListener('input', e => {
+  const v = +e.target.value;
+  document.getElementById('bgCountVal').textContent = v;
+  bgSave({ blobs: v }); BgFx.refresh();
+});
+$('#rowBgMagnet').addEventListener('click', () => {
+  const c = bgCfg();
+  bgSave({ magnet: !c.magnet });
+  renderBgControls();
+});
+$('#bgShuffle').addEventListener('click', () => {
+  const cfg = bgCfg(), p = bgPreset(cfg.preset);
+  const arr = (cfg.colors && cfg.colors.length ? cfg.colors.slice() : p.colors.slice());
+  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+  bgSave({ colors: arr });
+  BgFx.refresh(); renderBgControls();
+  toast('Палитра перемешана');
 });
 $('#demoBtn').addEventListener('click', () => {
   const base = [
