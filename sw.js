@@ -1,5 +1,5 @@
 /* Пульс — service worker: офлайн-оболочка приложения */
-const CACHE = 'puls-v3';
+const CACHE = 'puls-v4';
 const SHELL = [
   './',
   './index.html',
@@ -52,6 +52,19 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.endsWith('push-server.json')) return; /* адрес туннеля — всегда свежий */
+  /* навигация: всегда свежий index.html, кэш — только офлайн-запас */
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copy));
+        }
+        return res;
+      }).catch(() => caches.match(e.request).then((r) => r || caches.match('./index.html')))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const net = fetch(e.request).then((res) => {
