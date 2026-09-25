@@ -2098,6 +2098,27 @@ const Wx = (() => {
     lastTemp = d.temp;
     cityEl.textContent = d.city || '';
     strip.title = wd[1] + ' · макс ' + d.hi + '° / мин ' + d.lo + '°';
+    wxTips(d);
+  }
+  const RAIN_CODES = [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99];
+  function wxTips(d) {
+    const t = todayStr();
+    state.wxTips = state.wxTips || {};
+    const tips = [];
+    if (RAIN_CODES.includes(d.code)) tips.push({ key: 'umbrella', title: 'Взять зонт', icon: 'walk', time: '09:00' });
+    if (d.hi >= 30) tips.push({ key: 'water', title: 'Пейте больше воды', icon: 'meal', time: '12:00' });
+    if (!tips.length) return;
+    const nowHHMM = new Date().toTimeString().slice(0, 5);
+    let added = 0;
+    for (const tip of tips) {
+      if (state.wxTips[tip.key] === t) continue;
+      state.wxTips[tip.key] = t;
+      if (dayItems(t).some(i => i.title === tip.title)) continue;
+      if (tip.time <= nowHHMM) continue;
+      state.items.push({ id: uid(), date: t, time: tip.time, title: tip.title, icon: tip.icon, done: false, fired: false, wxTip: true });
+      added++;
+    }
+    if (added) { save(); renderAll(); toast('Погода подсказала · +' + added + ' напоминание'); }
   }
   async function refresh(lat, lon, city) {
     try {
