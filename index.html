@@ -763,14 +763,26 @@ backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6p
 .bcount b{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-shadow:0 2px 12px rgba(130,80,55,.3)}
 .bhint{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-top:2px;min-height:18px}
 .bstats{display:flex;gap:10px;justify-content:center;margin:18px 0 4px}
-.bstat{flex:1;max-width:110px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:18px;padding:10px 6px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.bstat{flex:1;max-width:110px;border-radius:18px;padding:10px 6px;color:#6B4F3D;
+background:linear-gradient(180deg,#FFFDF9 0%,#F7ECDB 100%);
+box-shadow:0 10px 22px rgba(150,100,70,.22),inset 0 1px 0 rgba(255,255,255,.95)}
 .bstat b{display:block;font-size:19px;font-weight:800}
-.bstat small{font-size:11px;font-weight:700;color:rgba(255,255,255,.85)}
-.bpats{display:flex;gap:8px;justify-content:center;margin:14px 0 2px;flex-wrap:wrap}
-.bpat{padding:9px 15px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:800;font-size:13px;transition:all .25s}
-.bpat small{display:block;font-size:10.5px;font-weight:700;opacity:.75}
-.bpat.on{background:#fff;color:#4E7A6D;border-color:#fff}
-.bpat.on small{opacity:.6}
+.bstat small{font-size:11px;font-weight:700;color:#A68A6E}
+.blist{display:flex;flex-direction:column;gap:10px;margin:16px 0 2px;position:relative}
+.bex{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:20px;padding:14px 16px;color:#6B4F3D;
+background:linear-gradient(180deg,#FFFDF9 0%,#F6EBD8 100%);
+box-shadow:0 10px 22px rgba(150,100,70,.22),inset 0 1px 0 rgba(255,255,255,.95);transition:transform .2s}
+.bex:active{transform:scale(.98)}
+.bex-t{flex:1}
+.bex-t b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.01em}
+.bex-t small{font-size:12px;font-weight:700;color:#A68A6E}
+.bex .chev{width:20px;height:20px;color:#C4A98A;flex:none;display:grid;place-items:center;transition:transform .25s}
+.bex .chev svg{width:100%;height:100%}
+.bex.open .chev{transform:rotate(90deg)}
+.bex.on{outline:2.5px solid rgba(255,255,255,.9);outline-offset:-2.5px}
+.bex-how{border-radius:18px;padding:14px 16px;font-size:13px;line-height:1.6;font-weight:600;color:#6B4F3D;text-align:left;
+background:linear-gradient(180deg,#FFFDF9 0%,#F7ECDB 100%);
+box-shadow:0 10px 22px rgba(150,100,70,.20),inset 0 1px 0 rgba(255,255,255,.95);animation:rise .35s cubic-bezier(.22,1,.36,1) both}
 @media (prefers-reduced-motion:reduce){.bcard{animation:none}}
 </style>
 </head>
@@ -826,8 +838,7 @@ backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6p
         <div class="bstat"><b id="breathMins">0</b><small>минут</small></div>
         <div class="bstat"><b id="breathSess">0</b><small>сессий</small></div>
       </div>
-      <div class="bpats" id="breathPats"></div>
-      <div class="bhow" id="breathHow"></div>
+      <div class="blist" id="breathPats"></div>
       <button class="btn dark wide" id="breathStart" style="margin-top:16px">Начать</button>
     </div>
   </section>
@@ -1472,24 +1483,24 @@ $('#addForm').addEventListener('submit', (e) => {
 
 /* ---------- дыхание ---------- */
 const BREATH_PATS = [
-  { id: 'calm', name: 'Спокойствие', desc: '4 · 4 · 6',
+  { id: 'calm', tag: 'снять тревогу', name: 'Спокойствие', desc: '4 · 4 · 6',
     how: 'Сядь прямо, расслабь плечи. Вдыхай носом на 4 счёта, задержи дыхание на 4, затем медленно выдыхай ртом на 6. Удлинённый выдох успокаивает нервную систему — 3–5 циклов, и тревога отступает.',
     phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 6]] },
-  { id: 'box', name: 'Квадрат', desc: '4 · 4 · 4 · 4',
+  { id: 'box', tag: 'собраться с мыслями', name: 'Квадрат', desc: '4 · 4 · 4 · 4',
     how: 'Дыши «квадратом»: вдох — задержка — выдох — пауза, всё ровно по 4 счёта, как стороны квадрата. Держи плечи опущенными, дыши животом. Отлично собирает мысли перед важной задачей.',
     phases: [['Вдох', 4], ['Задержка', 4], ['Выдох', 4], ['Пауза', 4]] },
-  { id: 'deep', name: 'Глубокое', desc: '4 · 7 · 8',
+  { id: 'deep', tag: 'быстро уснуть', name: 'Глубокое', desc: '4 · 7 · 8',
     how: 'Техника для быстрого засыпания. Вдыхай носом на 4 счёта, задержи дыхание на 7, выдыхай ртом на 8 с лёгким свистом. Делай лёжа, повтори 3–4 цикла — тело начнёт расслабляться само.',
     phases: [['Вдох', 4], ['Задержка', 7], ['Выдох', 8]] },
-  { id: 'even', name: 'Ровное', desc: '5 · 5',
+  { id: 'even', tag: 'на каждый день', name: 'Ровное', desc: '5 · 5',
     how: 'Самое простое на каждый день: вдох на 5 счётов, выдох на 5, без задержек. На вдохе живот мягко поднимается, на выдохе опускается. Выравнивает пульс и возвращает в момент.',
     phases: [['Вдох', 5], ['Выдох', 5]] },
-  { id: 'minute', name: 'Минутка', desc: '4 · 4',
+  { id: 'minute', tag: 'перезагрузка за минуту', name: 'Минутка', desc: '4 · 4',
     how: 'Когда нет времени: всего минута ровного дыхания. Вдох на 4, выдох на 4. Закрой глаза, отпусти челюсть и язык от нёба. Даже 60 секунд заметно снижают напряжение.',
     phases: [['Вдох', 4], ['Выдох', 4]] },
 ];
 const BREATH_KEY = 'puls.breath.v1';
-let breath = { pat: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0 } };
+let breath = { pat: 0, open: 0, running: false, phase: 0, phaseEnd: 0, timer: null, t0: 0, cycles: 0, total: { cycles: 0, mins: 0, sess: 0 } };
 try { Object.assign(breath.total, JSON.parse(localStorage.getItem(BREATH_KEY)) || {}); } catch (e) {}
 function breathSave() { try { localStorage.setItem(BREATH_KEY, JSON.stringify(breath.total)); } catch (e) {} }
 let _bac = null;
@@ -1521,13 +1532,24 @@ function renderBreathPats() {
   BREATH_PATS.forEach((p, i) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'bpat' + (i === breath.pat ? ' on' : '');
-    b.innerHTML = p.name + '<small>' + p.desc + '</small>';
-    b.addEventListener('click', () => { if (breath.running) return; breath.pat = i; renderBreathPats(); });
+    b.className = 'bex' + (i === breath.pat ? ' on' : '') + (breath.open === i ? ' open' : '');
+    b.setAttribute('aria-expanded', breath.open === i ? 'true' : 'false');
+    b.innerHTML = '<span class="bex-t"><b>' + p.name + '</b><small>' + p.tag + '</small></span>'
+      + '<span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>';
+    b.addEventListener('click', () => {
+      if (breath.running) return;
+      if (i === breath.pat) breath.open = breath.open === i ? -1 : i;
+      else { breath.pat = i; breath.open = i; }
+      renderBreathPats();
+    });
     box.appendChild(b);
+    if (breath.open === i) {
+      const h = document.createElement('div');
+      h.className = 'bex-how';
+      h.textContent = p.how;
+      box.appendChild(h);
+    }
   });
-  const how = $('#breathHow');
-  if (how) how.textContent = BREATH_PATS[breath.pat].how;
 }
 const BREATH_FREQ = { 'Вдох': 523.25, 'Задержка': 440, 'Выдох': 392, 'Пауза': 440 };
 function breathPhase(i) {
