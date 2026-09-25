@@ -188,6 +188,14 @@ mask-image:radial-gradient(110% 110% at 60% 50%,#000 55%,transparent 80%)}
 box-shadow:0 10px 20px -8px rgba(0,0,0,.5);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .playbtn svg{width:20px;height:20px;margin-left:2px}
 .pcard.minicard{background:linear-gradient(135deg,#F7C3DC,#F0A4C9)}
+/* ---------- today card: progress ring ---------- */
+.pcard.minicard .ringwrap{position:relative;width:108px;height:108px;margin:6px auto 0;z-index:2}
+.pcard.minicard .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.pcard.minicard .ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.pcard.minicard .ring-track{stroke:rgba(255,255,255,.38)}
+.pcard.minicard .ring-prog{stroke:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.85));transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1);animation:ring-breathe 3.2s ease-in-out infinite}
+@keyframes ring-breathe{0%,100%{opacity:.9}50%{opacity:1}}
+.pcard.minicard .ringwrap .bignum{position:absolute;inset:0;display:grid;place-items:center;margin:0}
 
 /* ---------- выбор категории ---------- */
 .catpick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
@@ -1378,6 +1386,7 @@ function pcard(it, idx, now) {
   });
   return el;
 }
+let ringPrevPct = 0;
 function specialCards(now) {
   const frag = document.createDocumentFragment();
   const t = todayStr();
@@ -1399,13 +1408,23 @@ function specialCards(now) {
   const pct = items.length ? Math.round(done / items.length * 100) : 0;
   const s = document.createElement('article');
   s.className = 'pcard minicard';
+  const RC = 263.9, ringFrom = ringPrevPct;
+  ringPrevPct = pct;
   s.innerHTML = `
     <div class="pcard-top"><span class="pill">Сегодня</span></div>
-    <div class="bignum">${done}/${items.length}</div>
+    <div class="ringwrap">
+      <svg class="ring" viewBox="0 0 96 96" aria-hidden="true">
+        <circle class="ring-track" cx="48" cy="48" r="42"></circle>
+        <circle class="ring-prog" cx="48" cy="48" r="42" stroke-dasharray="${RC}" stroke-dashoffset="${(RC * (1 - ringFrom / 100)).toFixed(1)}" data-to="${(RC * (1 - pct / 100)).toFixed(1)}"></circle>
+      </svg>
+      <div class="bignum">${done}/${items.length}</div>
+    </div>
     <p class="meta">выполнено · ${pct}%</p>
     <div class="minibar"><i style="width:${pct}%"></i></div>`;
   s.addEventListener('click', () => gotoTab('stats'));
   frag.appendChild(s);
+  const rp = s.querySelector('.ring-prog');
+  if (rp) requestAnimationFrame(() => requestAnimationFrame(() => { rp.style.strokeDashoffset = rp.dataset.to; }));
   return frag;
 }
 function renderCards() {
