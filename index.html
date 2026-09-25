@@ -66,6 +66,11 @@ input[type=range].bgrange::-moz-range-thumb{width:20px;height:20px;border-radius
 .bgtoggle .st{flex:1;min-width:0}
 .bgtoggle .st b{display:block;font-size:14px;font-weight:800}
 .bgtoggle .st small{color:var(--muted);font-weight:700;font-size:12px}
+.sheet .bgcontrols{padding:0 0 6px}
+.bgmini{display:flex;gap:5px;align-items:center;flex:none}
+.bgmini i{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.chev{width:20px;height:20px;color:var(--faint);flex:none;display:grid;place-items:center}
+.chev svg{width:100%;height:100%}
 .screen{display:none}
 .screen.active{display:block;animation:fadein .4s cubic-bezier(.22,1,.36,1)}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -1064,32 +1069,12 @@ html[data-theme="dark"]{color-scheme:light !important}
         <span class="st"><b>Живой фон</b><small>Дрейфующие цветные пятна</small></span>
         <span class="switch" id="swLiveBg"></span>
       </button>
-      <div class="bgcontrols" id="livebgControls">
-        <div>
-          <div class="bgshead"><b>Палитра</b><button class="bshuffle" id="bgShuffle">Перемешать</button></div>
-          <div class="bgpresets" id="bgPresets" style="margin-top:9px"></div>
-        </div>
-        <div class="bctl">
-          <div class="bctl-top"><span>Размытие</span><b id="bgBlurVal">80px</b></div>
-          <input type="range" class="bgrange" id="bgBlur" min="20" max="140" step="1" value="80">
-        </div>
-        <div class="bctl">
-          <div class="bctl-top"><span>Скорость анимации</span><b id="bgSpeedVal">1.0x</b></div>
-          <input type="range" class="bgrange" id="bgSpeed" min="0.1" max="3" step="0.1" value="1">
-        </div>
-        <div class="bctl">
-          <div class="bctl-top"><span>Зерно плёнки</span><b id="bgNoiseVal">5.5%</b></div>
-          <input type="range" class="bgrange" id="bgNoise" min="0" max="20" step="0.5" value="5.5">
-        </div>
-        <div class="bctl">
-          <div class="bctl-top"><span>Количество пятен</span><b id="bgCountVal">6</b></div>
-          <input type="range" class="bgrange" id="bgCount" min="3" max="10" step="1" value="6">
-        </div>
-        <button class="bgtoggle" id="rowBgMagnet">
-          <span class="st"><b>Магнит пальца</b><small>Пятна тянутся за касанием</small></span>
-          <span class="switch" id="swBgMagnet"></span>
-        </button>
-      </div>
+      <button class="srow" id="rowBgStyle">
+        <span class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.8 2-1.8 0-1.3-1.2-1.7-1.2-2.9 0-1.2 1-2.1 2.3-2.1h1.9a4 4 0 0 0 4-4c0-3.9-4-7.2-9-7.2z"/><circle cx="7.6" cy="11.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="10.3" cy="7.8" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.8" cy="7.8" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+        <span class="st"><b>Оформление фона</b><small id="bgCurrentName">Аврора</small></span>
+        <span class="bgmini" id="bgMini"></span>
+        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
     </div>
     <div class="setcard">
       <button class="srow" id="demoBtn">
@@ -1135,6 +1120,36 @@ html[data-theme="dark"]{color-scheme:light !important}
       <div class="field"><span>Категория</span><div class="catpick" id="iconPick"></div></div>
       <button class="btn dark wide" type="submit" style="margin-top:6px">Добавить</button>
     </form>
+  </div>
+  <div class="sheet" id="bgSheet" role="dialog" aria-modal="true" aria-label="Живой фон">
+    <div class="grip"></div>
+    <h2>Живой фон</h2>
+    <div class="bgcontrols" id="livebgControls">
+      <div>
+        <div class="bgshead"><b>Палитра</b><button class="bshuffle" id="bgShuffle">Перемешать</button></div>
+        <div class="bgpresets" id="bgPresets" style="margin-top:9px"></div>
+      </div>
+      <div class="bctl">
+        <div class="bctl-top"><span>Размытие</span><b id="bgBlurVal">80px</b></div>
+        <input type="range" class="bgrange" id="bgBlur" min="20" max="140" step="1" value="80">
+      </div>
+      <div class="bctl">
+        <div class="bctl-top"><span>Скорость анимации</span><b id="bgSpeedVal">1.0x</b></div>
+        <input type="range" class="bgrange" id="bgSpeed" min="0.1" max="3" step="0.1" value="1">
+      </div>
+      <div class="bctl">
+        <div class="bctl-top"><span>Зерно плёнки</span><b id="bgNoiseVal">5.5%</b></div>
+        <input type="range" class="bgrange" id="bgNoise" min="0" max="20" step="0.5" value="5.5">
+      </div>
+      <div class="bctl">
+        <div class="bctl-top"><span>Количество пятен</span><b id="bgCountVal">6</b></div>
+        <input type="range" class="bgrange" id="bgCount" min="3" max="10" step="1" value="6">
+      </div>
+      <button class="bgtoggle" id="rowBgMagnet">
+        <span class="st"><b>Магнит пальца</b><small>Пятна тянутся за касанием</small></span>
+        <span class="switch" id="swBgMagnet"></span>
+      </button>
+    </div>
   </div>
   <div class="toasts" id="toasts"></div>
 </div>
@@ -1559,12 +1574,14 @@ function gotoTab(name) {
 document.querySelectorAll('.navi').forEach(b => b.addEventListener('click', () => gotoTab(b.dataset.tab)));
 
 /* ---------- шторка ---------- */
-const sheet = $('#sheet'), backdrop = $('#backdrop');
+const sheet = $('#sheet'), backdrop = $('#backdrop'), bgSheet = $('#bgSheet');
 // Keep the modal at document level so mobile browser stacking/transform contexts
 // cannot clip the fixed-position sheet.
 document.body.appendChild(backdrop);
 document.body.appendChild(sheet);
+document.body.appendChild(bgSheet);
 sheet.setAttribute('aria-hidden', 'true');
+bgSheet.setAttribute('aria-hidden', 'true');
 backdrop.setAttribute('aria-hidden', 'true');
 let pickIcon = 'work';
 function buildPickers() {
@@ -1596,18 +1613,40 @@ function openSheet() {
 }
 function closeSheet() {
   sheet.classList.remove('show');
-  backdrop.classList.remove('show');
   sheet.setAttribute('aria-hidden', 'true');
-  backdrop.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
+  if (!bgSheet.classList.contains('show')) {
+    backdrop.classList.remove('show');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
   $('#addBtn')?.focus({ preventScroll: true });
 }
+function openBgSheet() {
+  renderBgControls();
+  backdrop.classList.add('show');
+  backdrop.setAttribute('aria-hidden', 'false');
+  bgSheet.classList.add('show');
+  bgSheet.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeBgSheet() {
+  if (!bgSheet.classList.contains('show')) return;
+  bgSheet.classList.remove('show');
+  bgSheet.setAttribute('aria-hidden', 'true');
+  if (!sheet.classList.contains('show')) {
+    backdrop.classList.remove('show');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && sheet.classList.contains('show')) closeSheet();
+  if (e.key !== 'Escape') return;
+  if (bgSheet.classList.contains('show')) closeBgSheet();
+  else if (sheet.classList.contains('show')) closeSheet();
 });
 $('#addBtn').addEventListener('click', openSheet);
 $('#emptyAdd').addEventListener('click', openSheet);
-backdrop.addEventListener('click', closeSheet);
+backdrop.addEventListener('click', () => { closeSheet(); closeBgSheet(); });
 $('#addForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const title = $('#fTitle').value.trim();
@@ -1902,9 +1941,19 @@ function applyLiveBg() {
   const c = bgCfg();
   document.body.classList.toggle('livebg', c.on);
   if (c.on) BgFx.start(); else BgFx.stop();
-  const ctl = document.getElementById('livebgControls');
-  if (ctl) ctl.style.display = c.on ? '' : 'none';
+  renderBgRow();
 }
+function renderBgRow() {
+  const c = bgCfg(), p = bgPreset(c.preset);
+  const pal = (c.colors && c.colors.length ? c.colors : p.colors);
+  const row = document.getElementById('rowBgStyle');
+  if (row) row.style.display = c.on ? '' : 'none';
+  const nm = document.getElementById('bgCurrentName');
+  if (nm) nm.textContent = p.name;
+  const mini = document.getElementById('bgMini');
+  if (mini) mini.innerHTML = pal.slice(0, 4).map(x => '<i style="background:' + x + '"></i>').join('');
+}
+$('#rowBgStyle').addEventListener('click', openBgSheet);
 $('#rowLiveBg').addEventListener('click', () => {
   const c = bgCfg();
   c.on = !c.on;
@@ -1933,6 +1982,7 @@ function renderBgControls() {
   txt('bgCountVal', cfg.blobs);
   const sw = document.getElementById('swBgMagnet');
   if (sw) sw.classList.toggle('on', cfg.magnet);
+  renderBgRow();
 }
 $('#bgBlur').addEventListener('input', e => {
   const v = +e.target.value;
