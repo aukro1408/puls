@@ -35,6 +35,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 input,select{font:inherit;color:inherit}
 img{display:block}
 .app{max-width:430px;margin:0 auto;padding:0 20px calc(120px + env(safe-area-inset-bottom))}
+
+/* ---------- живой фон ---------- */
+.bgfx{display:none}
+body.livebg .bgfx{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+body.livebg .app{position:relative;z-index:1}
+.bgfx i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;will-change:transform}
+.bgfx .b1{width:54vmax;height:54vmax;left:-15vmax;top:-13vmax;background:#C4B0F0;animation:bgd1 28s ease-in-out infinite alternate}
+.bgfx .b2{width:42vmax;height:42vmax;right:-11vmax;top:24%;background:#9FD0EE;animation:bgd2 34s ease-in-out infinite alternate}
+.bgfx .b3{width:46vmax;height:46vmax;left:6%;bottom:-15vmax;background:#F3BFD9;animation:bgd3 30s ease-in-out infinite alternate}
+@keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(10vmax,8vmax) scale(1.18)}}
+@keyframes bgd2{from{transform:translate(0,0) scale(1.12)}to{transform:translate(-9vmax,6vmax) scale(1)}}
+@keyframes bgd3{from{transform:translate(0,0) scale(1)}to{transform:translate(7vmax,-9vmax) scale(1.22)}}
+@media (prefers-reduced-motion:reduce){.bgfx i{animation:none}}
 .screen{display:none}
 .screen.active{display:block;animation:fadein .4s cubic-bezier(.22,1,.36,1)}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -866,6 +879,7 @@ html[data-theme="dark"]{color-scheme:light !important}
 </style>
 </head>
 <body>
+<div class="bgfx" id="bgfx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
 <div class="app">
 
   <!-- PLAN -->
@@ -980,6 +994,11 @@ html[data-theme="dark"]{color-scheme:light !important}
         <span class="st"><b>Тёмная тема</b><small>Берегите глаза вечером</small></span>
         <span class="switch" id="swTheme"></span>
       </button>
+      <button class="srow" id="rowLiveBg">
+        <span class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg></span>
+        <span class="st"><b>Живой фон</b><small>Дрейфующие цветные пятна</small></span>
+        <span class="switch" id="swLiveBg"></span>
+      </button>
     </div>
     <div class="setcard">
       <button class="srow" id="demoBtn">
@@ -1056,7 +1075,7 @@ const MONTHS = ['января','февраля','марта','апреля','м�
 
 /* ---------- состояние ---------- */
 const KEY = 'ritm.v1';
-let state = { items: [], nextId: 1, settings: { theme: 'light', notify: false, sound: true, name: 'Denis' } };
+let state = { items: [], nextId: 1, settings: { theme: 'light', notify: false, sound: true, name: 'Denis', livebg: true } };
 let selDate = todayStr();
 function todayStr(d) {
   d = d || new Date();
@@ -1562,6 +1581,7 @@ function renderSettings() {
   $('#swNotify').classList.toggle('on', state.settings.notify);
   $('#swSound').classList.toggle('on', state.settings.sound);
   $('#swTheme').classList.toggle('on', state.settings.theme === 'dark');
+  $('#swLiveBg').classList.toggle('on', state.settings.livebg !== false);
   renderName();
 }
 
@@ -1630,6 +1650,14 @@ $('#rowTheme').addEventListener('click', () => {
   document.documentElement.dataset.theme = state.settings.theme;
   renderSettings(); save();
 });
+function applyLiveBg() {
+  document.body.classList.toggle('livebg', state.settings.livebg !== false);
+}
+$('#rowLiveBg').addEventListener('click', () => {
+  state.settings.livebg = !(state.settings.livebg !== false);
+  applyLiveBg(); renderSettings(); save();
+  toast(state.settings.livebg ? 'Живой фон включён' : 'Живой фон выключен');
+});
 $('#demoBtn').addEventListener('click', () => {
   const base = [
     ['Утренняя пробежка', '07:30', 'sport'],
@@ -1694,6 +1722,7 @@ function tick() {
 /* ---------- старт ---------- */
 load();
 document.documentElement.dataset.theme = state.settings.theme;
+applyLiveBg();
 renderSettings();
 renderMascotPicker();
 updateMascotAvatars();
