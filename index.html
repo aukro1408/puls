@@ -1279,6 +1279,12 @@ function sysNotifOn() {
     Notification.permission === 'granted' && 'showTrigger' in Notification.prototype);
 }
 async function scheduleTaskNotif(it) {
+  if (window.NativeBridge && !it.done) {
+    try {
+      const nbTs = new Date(it.date + 'T' + it.time + ':00').getTime();
+      if (nbTs > Date.now()) NativeBridge.scheduleAlarm(String(it.id), String(it.title || 'Пульс'), 'Напоминание · ' + it.time, nbTs);
+    } catch (e) {}
+  }
   if (notifMode() !== 'trigger' || it.done) return;
   const reg = await swReady(); if (!reg) return;
   const ts = new Date(it.date + 'T' + it.time + ':00').getTime();
@@ -1296,6 +1302,7 @@ async function scheduleTaskNotif(it) {
   } catch (e) {}
 }
 async function cancelTaskNotif(id) {
+  if (window.NativeBridge) { try { NativeBridge.cancelAlarm(String(id)); } catch (e) {} }
   const reg = await swReady(); if (!reg) return;
   try {
     const list = await reg.getNotifications({ tag: NOTIF_TAG(id), includeTriggered: true });
@@ -1303,6 +1310,7 @@ async function cancelTaskNotif(id) {
   } catch (e) {}
 }
 async function cancelAllTaskNotifs() {
+  if (window.NativeBridge) { try { NativeBridge.cancelAllAlarms(); } catch (e) {} }
   const reg = await swReady(); if (!reg) return;
   try {
     const list = await reg.getNotifications({ includeTriggered: true });
