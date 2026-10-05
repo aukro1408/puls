@@ -1674,7 +1674,6 @@ function openSheet() {
   sheet.setAttribute('aria-hidden', 'false');
   backdrop.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
-  window.setTimeout(() => $('#fTitle').focus({ preventScroll: true }), 180);
 }
 function closeSheet() {
   sheet.classList.remove('show');
