@@ -323,6 +323,9 @@ box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.34,1
 background:var(--panel);border-radius:32px 32px 0 0;padding:14px 24px calc(28px + env(safe-area-inset-bottom));
 box-shadow:0 -20px 60px rgba(40,30,90,.3);transition:transform .42s cubic-bezier(.22,1,.36,1);max-height:88vh;max-height:88dvh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .sheet.show{transform:translate3d(-50%,0,0)}
+.sheet-x{position:absolute;top:12px;right:16px;width:38px;height:38px;border-radius:50%;border:0;background:var(--input);color:var(--muted);display:grid;place-items:center;cursor:pointer;z-index:2;-webkit-tap-highlight-color:transparent}
+.sheet-x svg{width:18px;height:18px;display:block}
+.sheet-x:active{transform:scale(.9)}
 .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:2px auto 18px}
 .sheet h2{margin:0 0 18px;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .field{margin-bottom:14px}
@@ -976,6 +979,7 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
   <div class="backdrop" id="backdrop"></div>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Новое напоминание">
     <div class="grip"></div>
+    <button class="sheet-x" id="sheetX" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Новое напоминание</h2>
     <form id="addForm">
       <div class="field"><span>Название</span><input id="fTitle" maxlength="60" placeholder="Например: Позвонить маме" autocomplete="off" /></div>
@@ -1712,6 +1716,31 @@ document.addEventListener('keydown', (e) => {
 $('#addBtn').addEventListener('click', openSheet);
 $('#emptyAdd').addEventListener('click', openSheet);
 backdrop.addEventListener('click', () => { closeSheet(); closeBgSheet(); });
+$('#sheetX').addEventListener('click', closeSheet);
+
+/* ---------- свайп вниз чтобы закрыть ---------- */
+let shDragY = null, shDragDy = 0;
+sheet.addEventListener('touchstart', (e) => {
+  if (e.target.closest('input,button,select,textarea,.catpick')) return;
+  if (sheet.scrollTop > 0) return;
+  shDragY = e.touches[0].clientY; shDragDy = 0;
+  sheet.style.transition = 'none';
+}, { passive: true });
+sheet.addEventListener('touchmove', (e) => {
+  if (shDragY === null) return;
+  shDragDy = Math.max(0, e.touches[0].clientY - shDragY);
+  sheet.style.transform = 'translate3d(-50%,' + shDragDy + 'px,0)';
+}, { passive: true });
+const shDragEnd = () => {
+  if (shDragY === null) return;
+  shDragY = null;
+  sheet.style.transition = '';
+  sheet.style.transform = '';
+  if (shDragDy > 110) closeSheet();
+  shDragDy = 0;
+};
+sheet.addEventListener('touchend', shDragEnd);
+sheet.addEventListener('touchcancel', shDragEnd);
 $('#addForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const title = $('#fTitle').value.trim();
