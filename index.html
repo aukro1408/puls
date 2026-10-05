@@ -1037,20 +1037,21 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
 'use strict';
 const $ = (s) => document.querySelector(s);
 const ICONS = {
+  home: 'linear-gradient(135deg,#10B981 0%,#6EE7B7 55%,#10B981 100%)',
   work: 'linear-gradient(135deg,#1687FF 0%,#34D6E8 55%,#1687FF 100%)',
-  walk: 'linear-gradient(135deg,#00B982 0%,#7AE6B2 52%,#00B982 100%)',
-  meet: 'linear-gradient(135deg,#8757F5 0%,#C39BFF 55%,#8757F5 100%)',
-  sport: 'linear-gradient(135deg,#FF6A22 0%,#FFC14A 52%,#FF6A22 100%)',
-  meal: 'linear-gradient(135deg,#F0B900 0%,#FFF07A 55%,#F0B900 100%)',
+  shop: 'linear-gradient(135deg,#FF6A22 0%,#FFC14A 52%,#FF6A22 100%)',
+  health: 'linear-gradient(135deg,#F43F5E 0%,#FDA4AF 55%,#F43F5E 100%)',
+  sport: 'linear-gradient(135deg,#8B5CF6 0%,#C4B5FD 55%,#8B5CF6 100%)',
   rest: 'linear-gradient(135deg,#F04F9A 0%,#FF9BCB 55%,#F04F9A 100%)'
 };
-const ICON_NAMES = { work:'Работа', walk:'Прогулка', meet:'Встреча', sport:'Спорт', meal:'Еда', rest:'Отдых' };
+const ICON_NAMES = { home:'Дом', work:'Работа', shop:'Покупки', health:'Здоровье', sport:'Спорт', rest:'Отдых' };
+const ICON_MIGRATE = { walk:'rest', meet:'work', meal:'shop' };
 const CAT_SVG = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg>',
   work: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12.5h18"/></svg>',
-  walk: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="5" r="2"/><path d="M13 8l-3.2 5M13 8l2.5 1.5L18 10"/><path d="M9.8 13 8 16.5 8.6 21M9.8 13l2.7 3 .4 5"/></svg>',
-  meet: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="16.8" cy="9" r="2.5"/><path d="M16.2 14.6c2.7.4 4.8 2.4 4.8 5.4"/></svg>',
+  shop: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.3 11.2a1 1 0 0 0 1 .8h9.9a1 1 0 0 0 1-.8L21.5 8H6"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>',
+  health: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.7-9.3-9.2C1.6 8.6 3.3 5.5 6.3 5.5c2 0 3.4 1.2 5.7 3.9 2.3-2.7 3.7-3.9 5.7-3.9 3 0 4.7 3.1 3.6 5.8-1.8 4.5-9.3 9.2-9.3 9.2z"/></svg>',
   sport: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>',
-  meal: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5h16"/><path d="M5.5 18.5a6.5 6.5 0 0 1 13 0"/><path d="M12 12V10"/><circle cx="12" cy="8.8" r="1"/></svg>',
   rest: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.2A8.2 8.2 0 1 1 10.8 4 6.6 6.6 0 0 0 20 13.2z"/></svg>'
 };
 const PALETTE = [
@@ -1223,7 +1224,7 @@ function load() {
     if (!d) return;
     if (Array.isArray(d.items)) state.items = d.items
       .filter(i => i && i.date && (i.time || (i.start && i.end)))
-      .map(i => ({ ...i, time: i.time || i.start }));
+      .map(i => ({ ...i, time: i.time || i.start, icon: ICON_MIGRATE[i.icon] || i.icon }));
     if (d.nextId) state.nextId = d.nextId;
     state.settings = { ...state.settings, ...(d.settings || {}) };
   } catch (e) {}
@@ -1503,11 +1504,11 @@ function pcard(it, idx, now) {
   const el = document.createElement('article');
   el.className = 'pcard taskcard' + (it.done ? ' done' : '');
   const cardTints = {
+    home: '#D3F5E4',
     work: '#D7EFFF',
-    walk: '#D7F8E9',
-    meet: '#E6DCFF',
-    sport: '#FFE0C8',
-    meal: '#FFF4C2',
+    shop: '#FFE0C8',
+    health: '#FFD9E2',
+    sport: '#E6DCFF',
     rest: '#FFD9EB'
   };
   const key = ICONS[it.icon] ? it.icon : 'work';
@@ -2255,8 +2256,8 @@ $('#demoBtn').addEventListener('click', () => {
   const base = [
     ['Утренняя пробежка', '07:30', 'sport'],
     ['Глубокая работа', '09:00', 'work'],
-    ['Обед', '13:00', 'meal'],
-    ['Созвон с командой', '15:00', 'meet'],
+    ['Обед', '13:00', 'rest'],
+    ['Созвон с командой', '15:00', 'work'],
   ];
   base.forEach(([title, time, icon]) => {
     const dit = { id: uid(), date: selDate, title, time, icon, done: false, fired: false };
@@ -2393,8 +2394,8 @@ const Wx = (() => {
     const t = todayStr();
     state.wxTips = state.wxTips || {};
     const tips = [];
-    if (RAIN_CODES.includes(d.code)) tips.push({ key: 'umbrella', title: 'Взять зонт', icon: 'walk', time: '09:00' });
-    if (d.hi >= 30) tips.push({ key: 'water', title: 'Пейте больше воды', icon: 'meal', time: '12:00' });
+    if (RAIN_CODES.includes(d.code)) tips.push({ key: 'umbrella', title: 'Взять зонт', icon: 'rest', time: '09:00' });
+    if (d.hi >= 30) tips.push({ key: 'water', title: 'Пейте больше воды', icon: 'health', time: '12:00' });
     if (!tips.length) return;
     const nowHHMM = new Date().toTimeString().slice(0, 5);
     let added = 0;
