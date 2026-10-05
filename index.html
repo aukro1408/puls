@@ -341,6 +341,10 @@ box-shadow:0 -20px 60px rgba(40,30,90,.3);transition:transform .42s cubic-bezier
 .tstep-btn:active svg{transform:scale(1.25)}
 .tstep-val{font-size:27px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
 .tstep-sep{align-self:center;font-size:24px;font-weight:800;color:var(--muted)}
+.dstep{position:relative;background:var(--input);border-radius:16px;display:flex;align-items:center;justify-content:center;min-height:100%;-webkit-tap-highlight-color:transparent}
+.dstep-val{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.01em;padding:0 34px 0 12px;white-space:nowrap}
+.dstep-ico{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);opacity:.55;pointer-events:none}
+.dstep-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0}
 .pick{display:flex;gap:10px;flex-wrap:wrap}
 .pick button{width:56px;height:56px;border-radius:50%;overflow:hidden;border:2.5px solid transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);background:#fff;padding:0}
 .pick button img{width:100%;height:100%;object-fit:cover}
@@ -984,7 +988,7 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
     <form id="addForm">
       <div class="field"><span>Название</span><input id="fTitle" maxlength="60" placeholder="Например: Позвонить маме" autocomplete="off" /></div>
       <div class="frow">
-        <div class="field"><span>День</span><input type="date" id="fDate" required /></div>
+        <div class="field"><span>День</span><div class="dstep"><div class="dstep-val" id="dVal">--.--.----</div><svg class="dstep-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><input type="date" id="fDate" class="dstep-input" required /></div></div>
         <div class="field"><span>Время</span><div class="tstep" role="group" aria-label="Выбор времени"><div class="tstep-col"><button type="button" class="tstep-btn" data-t="h+" aria-label="Час больше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg></button><div class="tstep-val" id="tH">09</div><button type="button" class="tstep-btn" data-t="h-" aria-label="Час меньше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l6 6 6-6"/></svg></button></div><div class="tstep-sep">:</div><div class="tstep-col"><button type="button" class="tstep-btn" data-t="m+" aria-label="Минуты больше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg></button><div class="tstep-val" id="tM">00</div><button type="button" class="tstep-btn" data-t="m-" aria-label="Минуты меньше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l6 6 6-6"/></svg></button></div></div></div>
       </div>
       <div class="field"><span>Категория</span><div class="catpick" id="iconPick"></div></div>
@@ -1641,6 +1645,11 @@ function buildPickers() {
 }
 let pickH = 9, pickM = 0;
 const pad2 = n => String(n).padStart(2, '0');
+function renderDateStep() {
+  const v = $('#fDate').value, el = $('#dVal');
+  if (el) el.textContent = v ? v.split('-').reverse().join('.') : '--.--.----';
+}
+$('#fDate').addEventListener('change', renderDateStep);
 function renderTimeStep() {
   const h = $('#tH'), m = $('#tM');
   if (h) h.textContent = pad2(pickH);
@@ -1670,7 +1679,7 @@ document.querySelectorAll('.tstep-btn').forEach(b => {
 function openSheet() {
   const d = new Date();
   const nextHour = new Date(d.getTime() + 60 * 60 * 1000);
-  $('#fDate').value = selDate;
+  $('#fDate').value = selDate; renderDateStep();
   pickH = nextHour.getHours(); pickM = 0; renderTimeStep();
   $('#fTitle').value = '';
   buildPickers();
