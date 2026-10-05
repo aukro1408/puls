@@ -89,6 +89,11 @@ box-shadow:0 8px 18px -8px rgba(240,107,168,.6)}
 .hello{flex:1;min-width:0}
 .hello b{display:block;font-size:17px;font-weight:800;letter-spacing:-.01em}
 .hello span{font-size:12.5px;color:var(--muted);font-weight:700}
+.hello-name{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;display:flex;align-items:center;gap:7px;cursor:pointer;text-align:left;max-width:100%}
+.hello-name b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hello-pencil{width:13px;height:13px;opacity:.38;flex:none}
+.hello-input{width:100%;background:var(--input);border:0;border-radius:12px;padding:9px 12px;font-size:17px;font-weight:800;outline:none;color:inherit;font-family:inherit}
+.hello-input:focus{box-shadow:0 0 0 2px var(--accent)}
 .iconbtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;flex:none;
 transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .iconbtn.dark{background:var(--nav);color:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
@@ -325,6 +330,14 @@ box-shadow:0 -20px 60px rgba(40,30,90,.3);transition:transform .42s cubic-bezier
 .field input{width:100%;background:var(--input);border:0;border-radius:16px;padding:15px 16px;font-size:16px;font-weight:700;outline:none}
 .field input:focus{box-shadow:0 0 0 2px var(--accent)}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tstep{display:flex;align-items:stretch;gap:8px}
+.tstep-col{flex:1;background:var(--input);border-radius:16px;padding:4px;display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
+.tstep-btn{border:0;background:none;color:var(--muted);padding:9px 22px;cursor:pointer;line-height:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+.tstep-btn svg{width:18px;height:18px;display:block}
+.tstep-btn:active{color:var(--accent)}
+.tstep-btn:active svg{transform:scale(1.25)}
+.tstep-val{font-size:27px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.tstep-sep{align-self:center;font-size:24px;font-weight:800;color:var(--muted)}
 .pick{display:flex;gap:10px;flex-wrap:wrap}
 .pick button{width:56px;height:56px;border-radius:50%;overflow:hidden;border:2.5px solid transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);background:#fff;padding:0}
 .pick button img{width:100%;height:100%;object-fit:cover}
@@ -809,7 +822,7 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
   <section class="screen active" id="scr-plan">
     <header class="topbar">
       <div class="avatar">D</div>
-      <div class="hello"><b id="helloName">Привет, Denis</b><span id="todayLine">Сегодня</span></div>
+      <div class="hello"><button class="hello-name" id="helloNameBtn" aria-label="Изменить имя"><b id="helloName">Привет, Denis</b><svg class="hello-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button><input id="helloNameInput" class="hello-input" maxlength="24" autocomplete="off" placeholder="Ваше имя" hidden /><span id="todayLine">Сегодня</span></div>
       <button class="wx-mini" id="wxStrip" aria-label="Погода, тап — определить местоположение">
         <span class="wx-ico" id="wxIco">🌤️</span>
         <span class="wx-tx"><b id="wxTemp">--°</b><small id="wxCity">…</small></span>
@@ -968,7 +981,7 @@ button:active,.pcard:active,.bcard:active,.bex:active,.bring:active,.day:active,
       <div class="field"><span>Название</span><input id="fTitle" maxlength="60" placeholder="Например: Позвонить маме" autocomplete="off" /></div>
       <div class="frow">
         <div class="field"><span>День</span><input type="date" id="fDate" required /></div>
-        <div class="field"><span>Время</span><input type="time" id="fTime" required /></div>
+        <div class="field"><span>Время</span><div class="tstep" role="group" aria-label="Выбор времени"><div class="tstep-col"><button type="button" class="tstep-btn" data-t="h+" aria-label="Час больше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg></button><div class="tstep-val" id="tH">09</div><button type="button" class="tstep-btn" data-t="h-" aria-label="Час меньше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l6 6 6-6"/></svg></button></div><div class="tstep-sep">:</div><div class="tstep-col"><button type="button" class="tstep-btn" data-t="m+" aria-label="Минуты больше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg></button><div class="tstep-val" id="tM">00</div><button type="button" class="tstep-btn" data-t="m-" aria-label="Минуты меньше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l6 6 6-6"/></svg></button></div></div></div>
       </div>
       <div class="field"><span>Категория</span><div class="catpick" id="iconPick"></div></div>
       <button class="btn dark wide" type="submit" style="margin-top:6px">Добавить</button>
@@ -1621,11 +1634,39 @@ function buildPickers() {
     ip.appendChild(b);
   });
 }
+let pickH = 9, pickM = 0;
+const pad2 = n => String(n).padStart(2, '0');
+function renderTimeStep() {
+  const h = $('#tH'), m = $('#tM');
+  if (h) h.textContent = pad2(pickH);
+  if (m) m.textContent = pad2(pickM);
+}
+function stepTime(k) {
+  if (k === 'h+') pickH = (pickH + 1) % 24;
+  else if (k === 'h-') pickH = (pickH + 23) % 24;
+  else if (k === 'm+') pickM = (pickM + 5) % 60;
+  else if (k === 'm-') pickM = (pickM + 55) % 60;
+  renderTimeStep();
+}
+document.querySelectorAll('.tstep-btn').forEach(b => {
+  const k = b.dataset.t;
+  let t1 = null, iv = null, byPointer = false;
+  b.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    byPointer = true; stepTime(k);
+    t1 = setTimeout(() => { iv = setInterval(() => stepTime(k), 80); }, 450);
+  });
+  const stop = () => { clearTimeout(t1); clearInterval(iv); };
+  b.addEventListener('pointerup', stop);
+  b.addEventListener('pointercancel', stop);
+  b.addEventListener('pointerleave', stop);
+  b.addEventListener('click', e => { if (byPointer) { byPointer = false; e.preventDefault(); } else stepTime(k); });
+});
 function openSheet() {
   const d = new Date();
   const nextHour = new Date(d.getTime() + 60 * 60 * 1000);
   $('#fDate').value = selDate;
-  $('#fTime').value = `${String(nextHour.getHours()).padStart(2,'0')}:00`;
+  pickH = nextHour.getHours(); pickM = 0; renderTimeStep();
   $('#fTitle').value = '';
   buildPickers();
   backdrop.classList.add('show');
@@ -1674,7 +1715,7 @@ backdrop.addEventListener('click', () => { closeSheet(); closeBgSheet(); });
 $('#addForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const title = $('#fTitle').value.trim();
-  const date = $('#fDate').value, time = $('#fTime').value;
+  const date = $('#fDate').value, time = pad2(pickH) + ':' + pad2(pickM);
   if (!title || !date || !time) { toast('Заполните название, день и время'); return; }
   const nit = { id: uid(), date, time, title, icon: pickIcon, done: false, fired: false };
   state.items.push(nit);
@@ -1999,6 +2040,7 @@ function renderName() {
   const n = (state.settings.name || '').trim() || 'Denis';
   const h = $('#helloName'); if (h) h.textContent = 'Привет, ' + n;
   const p = $('#profName'); if (p) p.textContent = n;
+  const av = $('#scr-plan .avatar'); if (av) av.textContent = n.charAt(0).toUpperCase();
 }
 const NAME_PENCIL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>';
 const NAME_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -2025,6 +2067,31 @@ $('#nameInput').addEventListener('keydown', e => {
   else if (e.key === 'Escape') setNameEditing(false);
 });
 $('#nameInput').addEventListener('blur', () => setTimeout(() => { if (editingName) saveName(); }, 160));
+
+/* ---------- имя прямо в шапке ---------- */
+let editingHelloName = false;
+function setHelloNameEditing(on) {
+  editingHelloName = on;
+  const btn = $('#helloNameBtn'), inp = $('#helloNameInput');
+  if (!btn || !inp) return;
+  btn.hidden = on; inp.hidden = !on;
+  if (on) {
+    inp.value = (state.settings.name || '').trim() || 'Denis';
+    setTimeout(() => { inp.focus(); inp.select(); }, 60);
+  }
+}
+function saveHelloName() {
+  const inp = $('#helloNameInput');
+  const n = ((inp && inp.value) || '').trim().slice(0, 24) || 'Denis';
+  state.settings.name = n; save(); renderName(); setHelloNameEditing(false);
+  toast('Готово, ' + n + '!');
+}
+$('#helloNameBtn').addEventListener('click', () => setHelloNameEditing(true));
+$('#helloNameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveHelloName();
+  else if (e.key === 'Escape') setHelloNameEditing(false);
+});
+$('#helloNameInput').addEventListener('blur', () => setTimeout(() => { if (editingHelloName) saveHelloName(); }, 160));
 $('#rowNotify').addEventListener('click', () => {
   if (!('Notification' in window)) { toast('Браузер не поддерживает уведомления'); return; }
   if (state.settings.notify) {
